@@ -11,6 +11,7 @@ export default function CVUpload() {
   const [loading, setLoading] = useState(false)
   const [sections, setSections] = useState(null)
   const [greeting, setGreeting] = useState(null)
+  const [completeness, setCompleteness] = useState(null)
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0]
@@ -32,6 +33,7 @@ export default function CVUpload() {
       })
       setSections(res.data.sections_indexed)
       setGreeting(res.data.greeting)
+      setCompleteness(res.data.completeness)
       toast.success('CV uploaded and indexed')
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Upload failed')
@@ -82,6 +84,32 @@ export default function CVUpload() {
              {greeting}
             </p>
             )}
+            {completeness && (
+  <div className="mb-4">
+    <div className="flex justify-between items-center mb-1">
+      <span className="text-gray-400 text-sm">CV Completeness</span>
+      <span className="text-violet-400 font-bold">{completeness.score}%</span>
+    </div>
+    <div className="w-full bg-gray-700 rounded-full h-2">
+      <div
+        className="bg-violet-500 h-2 rounded-full transition-all"
+        style={{ width: `${completeness.score}%` }}
+      />
+    </div>
+    <div className="flex justify-between mt-1">
+      <span className={`text-xs font-medium ${
+        completeness.level === 'Excellent' ? 'text-green-400' :
+        completeness.level === 'Good' ? 'text-blue-400' :
+        completeness.level === 'Fair' ? 'text-yellow-400' : 'text-red-400'
+      }`}>{completeness.level}</span>
+      {completeness.missing.length > 0 && (
+        <span className="text-xs text-gray-500">
+          Missing: {completeness.missing.join(', ')}
+        </span>
+      )}
+    </div>
+  </div>
+)}
             <p className="text-green-400 font-semibold mb-2">Sections indexed:</p>
             <div className="flex flex-wrap gap-2">
               {sections.map((s) => (

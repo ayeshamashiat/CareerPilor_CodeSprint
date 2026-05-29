@@ -85,3 +85,19 @@ def generate_cv_greeting(user_name: str, sections: list) -> str:
         max_tokens=100
     )
     return response.choices[0].message.content
+
+def compute_cv_completeness(sections: list) -> dict:
+    weights = {
+        "summary": 10,
+        "experience": 30,
+        "education": 20,
+        "skills": 25,
+        "projects": 15
+    }
+    score = sum(weights.get(s, 0) for s in sections)
+    missing = [s for s in weights if s not in sections]
+    return {
+        "score": score,
+        "missing": missing,
+        "level": "Excellent" if score >= 90 else "Good" if score >= 70 else "Fair" if score >= 50 else "Incomplete"
+    }

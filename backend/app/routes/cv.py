@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from app.utils.cloudinary_client import upload_cv
 from app.routes.auth import get_current_user
 from datetime import datetime
-from app.utils.rag import index_cv, query_cv, generate_cv_greeting
+from app.utils.rag import index_cv, query_cv, generate_cv_greeting, compute_cv_completeness
 from app.utils.mongo_client import cv_metadata_collection, users_collection
 from bson import ObjectId
 
@@ -44,11 +44,14 @@ async def upload_cv_endpoint(
     user_name = user["name"] if user else "there"
     greeting = generate_cv_greeting(user_name, sections_indexed)
 
+    completeness = compute_cv_completeness(sections_indexed)
+
     return JSONResponse({
         "message": "CV uploaded and indexed successfully",
         "sections_indexed": sections_indexed,
         "cloudinary_url": cloudinary_url,
-        "greeting": greeting
+        "greeting": greeting,
+        "completeness": completeness
     })
     
 
