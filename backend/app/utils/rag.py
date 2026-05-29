@@ -101,3 +101,31 @@ def compute_cv_completeness(sections: list) -> dict:
         "missing": missing,
         "level": "Excellent" if score >= 90 else "Good" if score >= 70 else "Fair" if score >= 50 else "Incomplete"
     }
+
+def generate_fit_analysis(job_title: str, job_description: str, cv_sections: list, overall_score: float) -> str:
+    sections_text = "\n".join([f"- {s['section']}: {s['score']}% match, snippet: {s['snippet']}" for s in cv_sections])
+    
+    response = groq_client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "user",
+                "content": f"""A user got a {overall_score}% fit score for the role: {job_title}.
+
+Job Description:
+{job_description[:500]}
+
+Their CV section match scores:
+{sections_text}
+
+In 3-4 sentences, explain:
+1. Why their score is {overall_score}%
+2. What specific skills are missing
+3. What they should improve or add to their CV
+
+Be specific and actionable. Don't be generic."""
+            }
+        ],
+        max_tokens=200
+    )
+    return response.choices[0].message.content

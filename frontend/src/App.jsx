@@ -4,6 +4,8 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import CVUpload from './pages/CVUpload'
 import useAuthStore from './store/authStore'
+import FitScore from './pages/FitScore'
+
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token)
@@ -22,6 +24,11 @@ export default function App() {
             <CVUpload />
           </ProtectedRoute>
         } />
+        <Route path="/fit-score" element={
+  <ProtectedRoute>
+    <FitScore />
+  </ProtectedRoute>
+} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <div className="text-white p-8">Dashboard coming soon</div>
