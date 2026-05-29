@@ -10,6 +10,7 @@ export default function CVUpload() {
   const [file, setFile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [sections, setSections] = useState(null)
+  const [greeting, setGreeting] = useState(null)
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0]
@@ -30,6 +31,7 @@ export default function CVUpload() {
         }
       })
       setSections(res.data.sections_indexed)
+      setGreeting(res.data.greeting)
       toast.success('CV uploaded and indexed')
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Upload failed')
@@ -75,6 +77,11 @@ export default function CVUpload() {
 
         {sections && (
           <div className="mt-6 p-4 bg-gray-800 rounded-xl">
+           {greeting && (
+            <p className="text-gray-300 italic mb-4 border-l-4 border-violet-500 pl-3">
+             {greeting}
+            </p>
+            )}
             <p className="text-green-400 font-semibold mb-2">Sections indexed:</p>
             <div className="flex flex-wrap gap-2">
               {sections.map((s) => (

@@ -1,10 +1,11 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import JSONResponse
-from app.utils.rag import index_cv, query_cv
 from app.utils.cloudinary_client import upload_cv
-from app.utils.mongo_client import cv_metadata_collection
 from app.routes.auth import get_current_user
 from datetime import datetime
+from app.utils.rag import index_cv, query_cv, generate_cv_greeting
+from app.utils.mongo_client import cv_metadata_collection, users_collection
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -38,11 +39,18 @@ async def upload_cv_endpoint(
         upsert=True
     )
 
+    
+    user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    user_name = user["name"] if user else "there"
+    greeting = generate_cv_greeting(user_name, sections_indexed)
+
     return JSONResponse({
         "message": "CV uploaded and indexed successfully",
         "sections_indexed": sections_indexed,
-        "cloudinary_url": cloudinary_url
+        "cloudinary_url": cloudinary_url,
+        "greeting": greeting
     })
+    
 
 @router.get("/query")
 async def query_cv_endpoint(

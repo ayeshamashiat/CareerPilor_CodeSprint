@@ -3,6 +3,9 @@ import docx
 import io
 from app.utils.chroma_client import get_cv_collection
 from app.utils.embeddings import get_embedding
+from groq import Groq
+import os
+
 
 def extract_text_from_pdf(file_bytes: bytes) -> str:
     doc = fitz.open(stream=file_bytes, filetype="pdf")
@@ -65,3 +68,20 @@ def query_cv(user_id: str, question: str, top_k: int = 3) -> list:
         n_results=top_k
     )
     return results["documents"][0] if results["documents"] else []
+
+
+groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+def generate_cv_greeting(user_name: str, sections: list) -> str:
+    sections_str = ", ".join(sections)
+    response = groq_client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "user",
+                "content": f"A user named {user_name} just uploaded their CV. The following sections were detected: {sections_str}. Write a short, warm, personalized 2-sentence greeting acknowledging their profile. Be encouraging and specific about what was found."
+            }
+        ],
+        max_tokens=100
+    )
+    return response.choices[0].message.content
