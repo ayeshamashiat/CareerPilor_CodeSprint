@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import CVUpload from './pages/CVUpload'
 import useAuthStore from './store/authStore'
 
 function ProtectedRoute({ children }) {
@@ -16,6 +17,11 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/cv-upload" element={
+          <ProtectedRoute>
+            <CVUpload />
+          </ProtectedRoute>
+        } />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <div className="text-white p-8">Dashboard coming soon</div>
