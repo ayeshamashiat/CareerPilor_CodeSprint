@@ -5,6 +5,7 @@ import Register from './pages/Register'
 import CVUpload from './pages/CVUpload'
 import useAuthStore from './store/authStore'
 import FitScore from './pages/FitScore'
+import Dashboard from './pages/Dashboard'
 
 
 function ProtectedRoute({ children }) {
@@ -30,9 +31,8 @@ export default function App() {
   </ProtectedRoute>
 } />
         <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <div className="text-white p-8">Dashboard coming soon</div>
-          </ProtectedRoute>
+            <Dashboard />
+          
         } />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
