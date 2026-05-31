@@ -29,3 +29,6 @@ Thumbs.db
 # Uploads / temp
 backend/uploads/
 *.pdf
+
+codebase.py
+project_dump.txt
