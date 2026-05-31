@@ -3,13 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes.auth import router as auth_router
 from app.routes.cv import router as cv_router
 from app.routes.fit import router as fit_router
+from app.routes.chat import router as chat_router
+from app.routes.tailor import router as tailor_router
+from app.routes.interview import router as interview_router
 
 app = FastAPI(title="CareerPilot API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -17,6 +20,9 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
 app.include_router(cv_router, prefix="/api/cv", tags=["CV"])
 app.include_router(fit_router, prefix="/api/fit", tags=["Fit Score"])
+app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
+app.include_router(tailor_router, prefix="/api/tailor", tags=["CV Tailor"])
+app.include_router(interview_router, prefix="/api/interview", tags=["Interview Coach"])
 
 @app.get("/health")
 async def health():
