@@ -58,6 +58,7 @@ const NAV = [
   { label: 'AI Assistant', icon: MessageSquare, to: '/chat' },
   { label: 'Job Hunter', icon: Briefcase, to: '/jobs' },
   { label: 'Fit Score', icon: Target, to: '/fit-score' },
+  { label: 'Upload CV', icon: FileText, to: '/cv-upload' },
   { label: 'Tailor CV', icon: FileText, to: '/tailor-cv' },
   { label: 'Interview Coach', icon: Mic, to: '/interview' },
   { label: 'Outreach', icon: Send, to: '/outreach' },
@@ -165,61 +166,14 @@ export default function Dashboard() {
   const roadmapPct = Math.round((roadmapDone / roadmap.length) * 100)
 
   return (
-    <div className="flex h-screen bg-gray-950 overflow-hidden">
+    <div className="flex flex-col h-full bg-gray-950">
 
-      {/* ── Sidebar ── */}
-      <aside className="w-52 shrink-0 bg-gray-900 border-r border-gray-800 flex flex-col py-4">
-        {/* Logo */}
-        <div className="px-4 pb-4 border-b border-gray-800 mb-2">
-          <p className="text-sm font-semibold text-white">CareerPilot</p>
-          <p className="text-xs text-gray-500 mt-0.5">AI-powered career OS</p>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex flex-col gap-0.5 px-2 flex-1">
-          {NAV.map(({ label, icon: Icon, to }) => {
-            const active = location.pathname === to
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
-                  active
-                    ? 'bg-gray-800 text-white border-l-2 border-violet-500 pl-[10px]'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }`}
-              >
-                <Icon size={15} />
-                {label}
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* AI Nudge */}
-        <div className="mx-3 mt-4 p-3 bg-amber-950/50 border border-amber-800/50 rounded-xl">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Zap size={11} className="text-amber-400" />
-            <span className="text-xs font-semibold text-amber-400">AI Nudge</span>
-          </div>
-          <p className="text-xs text-amber-200/80 leading-relaxed">{NUDGE}</p>
-        </div>
-      </aside>
+      
 
       {/* ── Main ── */}
       <main className="flex-1 flex flex-col overflow-hidden">
 
-        {/* Topbar */}
-        <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between shrink-0">
-          <div>
-            <h1 className="text-base font-semibold text-white">Progress Dashboard</h1>
-            <p className="text-xs text-gray-500 mt-0.5">Weekly stats, roadmap, and streak</p>
-          </div>
-          {/* Avatar */}
-          <div className="w-8 h-8 rounded-full bg-violet-900 border border-violet-700 flex items-center justify-center text-xs font-semibold text-violet-300">
-            {initials}
-          </div>
-        </div>
+        
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
