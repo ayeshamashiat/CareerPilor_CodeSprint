@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import Chat from './pages/Chat'
 import TailorCV from './pages/TailorCV'
 import InterviewCoach from './pages/InterviewCoach'
+import JobHunter from './pages/JobHunter'
 import Layout from './components/Layout'
 import useAuthStore from './store/authStore'
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
         <Route path="/tailor-cv" element={<ProtectedRoute><TailorCV /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewCoach /></ProtectedRoute>} />
+        <Route path="/jobs" element={<ProtectedRoute><JobHunter /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>

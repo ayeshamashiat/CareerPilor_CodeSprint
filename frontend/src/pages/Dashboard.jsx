@@ -1,14 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import axios from 'axios'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
+import Layout from '../components/Layout'
 import {
-  LayoutDashboard,
-  MessageSquare,
-  Briefcase,
-  FileText,
-  Target,
-  Mic,
   Send,
   TrendingUp,
   Flame,
@@ -17,7 +11,6 @@ import {
   Clock,
   Circle,
   ChevronRight,
-  Zap,
 } from 'lucide-react'
 
 // ─── mock data (replace with real API calls as you build out the backend) ───
@@ -49,20 +42,6 @@ const MOCK_KANBAN = {
     { title: 'Data Analyst', company: 'BRAC IT', source: 'No feedback given', date: 'May 15', faded: true },
   ],
 }
-
-const NUDGE = "You haven't applied this week. Here are 3 matching jobs: Backend Eng at Shajgoj (87%), Data Eng at Shohoz (81%), SWE at Chaldal (79%)."
-
-// ─── nav config ──────────────────────────────────────────────────────────────
-const NAV = [
-  { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
-  { label: 'AI Assistant', icon: MessageSquare, to: '/chat' },
-  { label: 'Job Hunter', icon: Briefcase, to: '/jobs' },
-  { label: 'Fit Score', icon: Target, to: '/fit-score' },
-  { label: 'Upload CV', icon: FileText, to: '/cv-upload' },
-  { label: 'Tailor CV', icon: FileText, to: '/tailor-cv' },
-  { label: 'Interview Coach', icon: Mic, to: '/interview' },
-  { label: 'Outreach', icon: Send, to: '/outreach' },
-]
 
 // ─── sub-components ──────────────────────────────────────────────────────────
 
@@ -139,11 +118,9 @@ function KanbanColumn({ title, cards, count }) {
 // ─── main component ──────────────────────────────────────────────────────────
 export default function Dashboard() {
   const user = useAuthStore((s) => s.user)
-  const location = useLocation()
-  const [stats, setStats] = useState(MOCK_STATS)
+  const [stats] = useState(MOCK_STATS)
   const [roadmap] = useState(MOCK_ROADMAP)
   const [kanban] = useState(MOCK_KANBAN)
-  const [loading, setLoading] = useState(false)
 
   // Uncomment to fetch real stats once the backend endpoint exists:
   // useEffect(() => {
@@ -153,30 +130,12 @@ export default function Dashboard() {
   // }, [])
 
   const firstName = user?.name?.split(' ')[0] || 'there'
-  const initials = user?.name
-    ? user.name
-        .split(' ')
-        .map((w) => w[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase()
-    : '?'
-
   const roadmapDone = roadmap.filter((r) => r.status === 'done').length
   const roadmapPct = Math.round((roadmapDone / roadmap.length) * 100)
 
   return (
-    <div className="flex flex-col h-full bg-gray-950">
-
-      
-
-      {/* ── Main ── */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-
-        
-
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+    <Layout>
+      <div className="px-6 py-5 space-y-6">
 
           {/* Greeting */}
           <div className="bg-violet-950/40 border border-violet-800/40 rounded-xl px-4 py-3 flex items-center gap-3">
@@ -249,8 +208,7 @@ export default function Dashboard() {
             </div>
 
           </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </Layout>
   )
 }
