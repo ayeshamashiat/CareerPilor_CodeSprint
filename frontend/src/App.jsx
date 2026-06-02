@@ -10,6 +10,7 @@ import TailorCV from './pages/TailorCV'
 import InterviewCoach from './pages/InterviewCoach'
 import Layout from './components/Layout'
 import useAuthStore from './store/authStore'
+import JobHunter from './pages/JobHunter'
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token)
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/chat" element={<Chat />} />
         <Route path="/tailor-cv" element={<TailorCV />} />
         <Route path="/interview" element={<InterviewCoach />} />
+        <Route path="/jobs" element={<JobHunter />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
