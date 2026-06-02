@@ -11,6 +11,7 @@ import InterviewCoach from './pages/InterviewCoach'
 import JobHunter from './pages/JobHunter'
 import Layout from './components/Layout'
 import useAuthStore from './store/authStore'
+import LandingPage from './pages/LandingPage'
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token)
@@ -31,7 +32,8 @@ export default function App() {
         <Route path="/tailor-cv" element={<ProtectedRoute><TailorCV /></ProtectedRoute>} />
         <Route path="/interview" element={<ProtectedRoute><InterviewCoach /></ProtectedRoute>} />
         <Route path="/jobs" element={<ProtectedRoute><JobHunter /></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   )
