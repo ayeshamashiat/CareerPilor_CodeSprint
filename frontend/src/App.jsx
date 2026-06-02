@@ -23,12 +23,12 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/cv-upload" element={<ProtectedRoute><CVUpload /></ProtectedRoute>} />
-        <Route path="/fit-score" element={<ProtectedRoute><FitScore /></ProtectedRoute>} />
-        <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-        <Route path="/tailor-cv" element={<ProtectedRoute><TailorCV /></ProtectedRoute>} />
-        <Route path="/interview" element={<ProtectedRoute><InterviewCoach /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/cv-upload" element={<CVUpload />} />
+        <Route path="/fit-score" element={<FitScore />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/tailor-cv" element={<TailorCV />} />
+        <Route path="/interview" element={<InterviewCoach />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
