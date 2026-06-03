@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import Layout from '../components/Layout'
 import {
   Send,
   TrendingUp,
@@ -134,7 +133,6 @@ export default function Dashboard() {
   const roadmapPct = Math.round((roadmapDone / roadmap.length) * 100)
 
   return (
-    <Layout>
       <div className="px-6 py-5 space-y-6">
 
           {/* Greeting */}
@@ -209,6 +207,5 @@ export default function Dashboard() {
 
           </div>
       </div>
-    </Layout>
   )
 }

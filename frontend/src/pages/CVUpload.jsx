@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
-import Layout from '../components/Layout'
+
 
 export default function CVUpload() {
   const navigate = useNavigate()
@@ -44,7 +44,6 @@ export default function CVUpload() {
   }
 
   return (
-    <Layout>
       <div className="flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-lg bg-gray-900 rounded-2xl p-8 shadow-xl">
           <h1 className="text-3xl font-bold text-white mb-2">Upload your CV</h1>
@@ -130,6 +129,5 @@ export default function CVUpload() {
           )}
         </div>
       </div>
-    </Layout>
   )
 }

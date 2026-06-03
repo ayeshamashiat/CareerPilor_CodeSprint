@@ -4,7 +4,7 @@ import useAuthStore from '../store/authStore'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import toast from 'react-hot-toast'
-import Layout from '../components/Layout'
+
 
 const SESSION_ID = 'session_' + Math.random().toString(36).slice(2)
 
@@ -62,7 +62,6 @@ export default function Chat() {
   }
 
   return (
-    <Layout>
       <div className="flex flex-col h-full">
         <div className="px-6 py-4 border-b border-gray-800">
           <h1 className="text-xl font-bold text-white">AI Career Assistant</h1>
@@ -138,6 +137,5 @@ export default function Chat() {
           </div>
         </div>
       </div>
-    </Layout>
   )
 }

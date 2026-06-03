@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
-import Layout from '../components/Layout'
+
 import {
   Briefcase,
   FileText,
@@ -196,7 +196,6 @@ export default function JobHunter() {
   }
 
   return (
-    <Layout>
       <div className="flex-1 overflow-hidden flex flex-col">
         <div className="px-6 py-4 border-b border-gray-800">
           <h1 className="text-base font-semibold text-white">Job Hunter</h1>
@@ -453,6 +452,5 @@ export default function JobHunter() {
             </div>
           </div>
       </div>
-    </Layout>
   )
 }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
-import Layout from '../components/Layout'
+
 
 export default function FitScore() {
   const token = useAuthStore((s) => s.token)
@@ -29,7 +29,6 @@ export default function FitScore() {
   }
 
   return (
-    <Layout>
       <div className="px-4 py-10">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold text-white mb-2">Fit Score</h1>
@@ -128,6 +127,5 @@ export default function FitScore() {
           )}
         </div>
       </div>
-    </Layout>
   )
 }
