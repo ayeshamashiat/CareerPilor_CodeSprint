@@ -1,6 +1,6 @@
 import os
 
-ROOT_DIR = "/home/ayeshamashiat/Documents/Personal Items/CodeSprint/CareerPilor_CodeSprint"
+ROOT_DIR = "E:\CodeSprint\CareerPilor_CodeSprint"
 OUTPUT_FILE = "project_dump.txt"
 
 # folders you DO NOT want to include
