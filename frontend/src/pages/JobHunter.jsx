@@ -38,7 +38,7 @@ function fitLabel(score) {
 function barColor(pct) {
   if (pct >= 75) return 'bg-green-500'
   if (pct >= 55) return 'bg-amber-500'
-  return 'bg-red-500'
+  return 'bg-violet-500'
 }
 
 // ─── sub-components ───────────────────────────────────────────────────────────
@@ -325,7 +325,7 @@ const [loading, setLoading] = useState(false)
               )}
 
               {selected && (
-                <div className="max-w-xl space-y-5">
+                <div className="max-w-full space-y-5">
 
                   {/* Header */}
                   <div>
