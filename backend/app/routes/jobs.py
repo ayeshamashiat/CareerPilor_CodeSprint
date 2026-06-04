@@ -28,17 +28,27 @@ def cosine_similarity(a, b):
 def compute_fit_score_for_job(job_text: str, user_id: str) -> float:
     try:
         collection = get_cv_collection(user_id)
+        count = collection.count()
+        print(f"DEBUG: Collection for {user_id} has {count} items", flush=True)
+        if count == 0:
+            return 0.0
         jd_embedding = get_embedding(job_text)
         results = collection.query(
             query_embeddings=[jd_embedding],
-            n_results=3,
+            n_results=min(3, count),
             include=["embeddings"]
         )
-        if not results["embeddings"][0]:
+        if not results["embeddings"] or not results["embeddings"][0]:
+            print(f"DEBUG: Empty embeddings returned", flush=True)
             return 0.0
         scores = [cosine_similarity(jd_embedding, emb) for emb in results["embeddings"][0]]
-        return round(sum(scores) / len(scores) * 100, 1)
-    except:
+        score = round(sum(scores) / len(scores) * 100, 1)
+        print(f"DEBUG: Score={score}", flush=True)
+        return score
+    except Exception as e:
+        print(f"DEBUG ERROR: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
         return 0.0
 
 def search_jobs_serpapi(query: str, location: str, num_results: int) -> list:

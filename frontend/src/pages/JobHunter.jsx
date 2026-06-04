@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
+import useJobStore from '../store/jobStore'
+
 
 import {
   Briefcase,
@@ -154,13 +156,17 @@ function AgentExplanation({ explanation }) {
 export default function JobHunter() {
   const token = useAuthStore((s) => s.token)
 
-  const [query,    setQuery]    = useState('')
-  const [locInput, setLocInput] = useState('Dhaka')
-  const [results,  setResults]  = useState([])
-  const [selected, setSelected] = useState(null)
-  const [agentMsg, setAgentMsg] = useState('')
-  const [loading,  setLoading]  = useState(false)
-  const [searched, setSearched] = useState(false)
+const {
+  results, setResults,
+  selected, setSelected,
+  query, setQuery,
+  location: storedLocation, setLocation,
+  searched, setSearched,
+  agentMsg, setAgentMsg
+} = useJobStore()
+
+const [locInput, setLocInput] = useState(storedLocation)
+const [loading, setLoading] = useState(false)
 
   const handleSearch = async () => {
     if (!query.trim()) return toast.error('Enter a job title or keyword')
@@ -169,6 +175,7 @@ export default function JobHunter() {
     setResults([])
     setSelected(null)
     setAgentMsg('')
+    setLocation(locInput) 
     try {
       const res = await axios.post(
         'http://localhost:8000/api/jobs/search',
