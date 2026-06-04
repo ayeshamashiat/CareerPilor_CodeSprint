@@ -73,3 +73,21 @@ async def get_cv_metadata(user_id: str = Depends(get_current_user)):
         raise HTTPException(404, "No CV found for this user")
     metadata["_id"] = str(metadata["_id"])
     return metadata
+
+@router.get("/status")
+async def get_cv_status(user_id: str = Depends(get_current_user)):
+    metadata = await cv_metadata_collection.find_one({"user_id": user_id})
+    if not metadata:
+        return {"has_cv": False}
+    
+    sections = metadata.get("sections_indexed", [])
+    completeness = compute_cv_completeness(sections)
+    
+    return {
+        "has_cv": True,
+        "filename": metadata.get("filename"),
+        "cloudinary_url": metadata.get("cloudinary_url"),
+        "uploaded_at": metadata.get("uploaded_at"),
+        "sections_indexed": sections,
+        "completeness": completeness
+    }

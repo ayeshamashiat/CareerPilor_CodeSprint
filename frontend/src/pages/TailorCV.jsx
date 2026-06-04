@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
@@ -10,6 +10,28 @@ export default function TailorCV() {
   const [jobDescription, setJobDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [changesMade, setChangesMade] = useState(null)
+  
+  const [history, setHistory] = useState([])
+  const [expandedChanges, setExpandedChanges] = useState({})
+
+  const fetchHistory = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/tailor/history', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      setHistory(res.data.tailored_cvs || [])
+    } catch (err) {
+      console.error('Failed to fetch history', err)
+    }
+  }
+
+  useEffect(() => {
+    fetchHistory()
+  }, [token])
+
+  const toggleExpand = (id) => {
+    setExpandedChanges(prev => ({ ...prev, [id]: !prev[id] }))
+  }
 
   const handleTailor = async () => {
     if (!jobDescription.trim()) return toast.error('Please paste a job description')
@@ -43,8 +65,23 @@ export default function TailorCV() {
       window.URL.revokeObjectURL(url)
 
       toast.success('Tailored CV downloaded!')
+      
+      // Refresh history to show the newly generated CV
+      fetchHistory()
     } catch (err) {
-      const detail = err.response?.data?.detail || 'Failed to tailor CV'
+      // If we got a blob but it's an error, we need to read it
+      let detail = 'Failed to tailor CV'
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text()
+          const json = JSON.parse(text)
+          detail = json.detail || detail
+        } catch (e) {
+          // Ignore
+        }
+      } else {
+        detail = err.response?.data?.detail || detail
+      }
       toast.error(detail)
     } finally {
       setLoading(false)
@@ -107,6 +144,62 @@ export default function TailorCV() {
               <li>A clean PDF is generated and downloaded instantly</li>
             </ol>
           </div>
+
+          <div className="mt-10">
+            <h2 className="text-2xl font-bold text-white mb-6">Previous Tailored CVs</h2>
+            
+            {history.length === 0 ? (
+              <p className="text-gray-500 text-center py-10 bg-gray-900 rounded-2xl">
+                No tailored CVs yet. Generate your first one above.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {history.map((item) => (
+                  <div key={item.id} className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-bold text-white text-lg">{item.job_title || 'Tailored CV'}</h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(item.created_at).toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => window.open(item.cloudinary_url, '_blank')}
+                        className="bg-violet-600/20 hover:bg-violet-600/40 text-violet-300 text-sm px-4 py-1.5 rounded-lg transition"
+                      >
+                        Download
+                      </button>
+                    </div>
+
+                    <p className="text-sm text-gray-500 italic mb-3">
+                      "{item.job_description_snippet}..."
+                    </p>
+
+                    {item.changes_made && (
+                      <div className="mt-3">
+                        <button
+                          onClick={() => toggleExpand(item.id)}
+                          className="text-xs text-violet-400 hover:text-violet-300 transition flex items-center"
+                        >
+                          {expandedChanges[item.id] ? 'Hide Changes' : 'View Changes'}
+                        </button>
+                        
+                        {expandedChanges[item.id] && (
+                          <div className="mt-2 p-3 bg-gray-800 rounded-lg text-sm text-gray-300">
+                            {item.changes_made}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
   )

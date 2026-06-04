@@ -6,8 +6,11 @@ import tempfile
 
 from app.routes.auth import get_current_user
 from app.utils.rag import query_cv
-from app.utils.mongo_client import cv_metadata_collection
+from app.utils.mongo_client import cv_metadata_collection, tailored_cvs_collection
+from app.utils.cloudinary_client import upload_cv
 from groq import Groq
+from datetime import datetime
+import time
 
 # reportlab imports
 from reportlab.lib.pagesizes import A4
@@ -200,9 +203,41 @@ async def tailor_cv(request: TailorRequest, user_id: str = Depends(get_current_u
         raise HTTPException(500, f"PDF generation failed: {str(e)}")
 
     filename = f"tailored_cv_{request.job_title.replace(' ', '_') or 'role'}.pdf"
+
+    # Read generated pdf bytes to upload to cloudinary
+    with open(output_path, "rb") as f:
+        pdf_bytes = f.read()
+
+    timestamp = int(time.time())
+    job_title_slug = request.job_title.replace(' ', '_').lower() or 'role'
+    cloud_filename = f"tailored_cvs/{job_title_slug}_{timestamp}.pdf"
+    
+    # Upload to Cloudinary
+    cloudinary_url = upload_cv(pdf_bytes, cloud_filename, user_id)
+    
+    # Save to MongoDB
+    await tailored_cvs_collection.insert_one({
+        "user_id": user_id,
+        "job_title": request.job_title,
+        "job_description_snippet": request.job_description[:200],
+        "cloudinary_url": cloudinary_url,
+        "changes_made": tailored.get("changes_made", ""),
+        "created_at": datetime.utcnow()
+    })
+
     return FileResponse(
         path=output_path,
         media_type="application/pdf",
         filename=filename,
         headers={"X-Changes-Made": tailored.get("changes_made", "")}
     )
+
+@router.get("/history")
+async def get_tailor_history(user_id: str = Depends(get_current_user)):
+    cursor = tailored_cvs_collection.find({"user_id": user_id}).sort("created_at", -1)
+    history = []
+    async for doc in cursor:
+        doc["id"] = str(doc["_id"])
+        del doc["_id"]
+        history.append(doc)
+    return {"tailored_cvs": history}
