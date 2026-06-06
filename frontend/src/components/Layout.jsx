@@ -5,9 +5,11 @@ import {
   LayoutDashboard, MessageSquare, Briefcase,
   FileText, Target, Mic, Send, Zap, Upload, LogOut
 } from 'lucide-react'
+import { User } from 'lucide-react'
 
 const NAV = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
+  { label: 'Profile', icon: User, to: '/profile' },
   { label: 'AI Assistant', icon: MessageSquare, to: '/chat' },
   { label: 'Job Hunter', icon: Briefcase, to: '/jobs' },
   { label: 'Fit Score', icon: Target, to: '/fit-score' },

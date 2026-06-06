@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
-import Layout from '../components/Layout'
+
 import {
   User,
   Mail,
@@ -165,29 +165,42 @@ function TailoredCVCard({ cv, onDownload, onDelete }) {
 // ─── main component ──────────────────────────────────────────────────────────
 export default function Profile() {
   const { user, token } = useAuthStore()
+  const [cvMetadata, setCvMetadata] = useState(null)
+
+useEffect(() => {
+  if (token) {
+    axios.get('http://localhost:8000/api/cv/metadata', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => setCvMetadata(res.data)).catch(() => {})
+  }
+}, [token])
 
   const name = user?.name || 'Rafsan Ahmed'
   const email = user?.email || 'rafsan@example.com'
-  const mainCVName = user?.cv_filename || null
+  const mainCVName = cvMetadata?.filename || null
 
   const [tailoredCVs, setTailoredCVs] = useState(MOCK_TAILORED_CVS)
   const [savingPassword, setSavingPassword] = useState(false)
   const [passwords, setPasswords] = useState({ current: '', next: '', confirm: '' })
 
-  const handlePasswordSave = async () => {
-    if (passwords.next !== passwords.confirm) return toast.error('Passwords do not match')
-    if (passwords.next.length < 8) return toast.error('Password must be at least 8 characters')
-    setSavingPassword(true)
-    try {
-      // await axios.post('http://localhost:8000/api/profile/password', { current_password: passwords.current, new_password: passwords.next }, { headers: { Authorization: `Bearer ${token}` } })
-      toast.success('Password changed successfully')
-      setPasswords({ current: '', next: '', confirm: '' })
-    } catch {
-      toast.error('Incorrect current password')
-    } finally {
-      setSavingPassword(false)
-    }
+const handlePasswordSave = async () => {
+  if (passwords.next !== passwords.confirm) return toast.error('Passwords do not match')
+  if (passwords.next.length < 8) return toast.error('Password must be at least 8 characters')
+  setSavingPassword(true)
+  try {
+    await axios.post(
+      'http://localhost:8000/api/auth/change-password',
+      { current_password: passwords.current, new_password: passwords.next },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    toast.success('Password changed successfully')
+    setPasswords({ current: '', next: '', confirm: '' })
+  } catch (err) {
+    toast.error(err.response?.data?.detail || 'Failed to change password')
+  } finally {
+    setSavingPassword(false)
   }
+}
 
   const handleTailoredDownload = (cv) => {
     toast.success(`Downloading ${cv.jobTitle} CV...`)
@@ -211,7 +224,6 @@ export default function Profile() {
     .slice(0, 2)
 
   return (
-    <Layout>
       <div className="px-6 py-5 max-w-3xl mx-auto space-y-6">
 
         {/* ── Profile Header ── */}
@@ -329,6 +341,5 @@ export default function Profile() {
         </div>
 
       </div>
-    </Layout>
   )
 }

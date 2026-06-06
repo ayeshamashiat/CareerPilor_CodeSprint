@@ -91,3 +91,28 @@ async def get_me(user_id: str = Depends(get_current_user)):
         "email": db_user["email"],
         "created_at": db_user["created_at"]
     }
+
+from pydantic import BaseModel as PydanticBaseModel
+
+class PasswordChangeRequest(PydanticBaseModel):
+    current_password: str
+    new_password: str
+
+@router.post("/change-password")
+async def change_password(
+    request: PasswordChangeRequest,
+    user_id: str = Depends(get_current_user)
+):
+    db_user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    if not db_user:
+        raise HTTPException(404, "User not found")
+    
+    if not verify_password(request.current_password, db_user["password"]):
+        raise HTTPException(400, "Current password is incorrect")
+    
+    new_hashed = hash_password(request.new_password)
+    await users_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"password": new_hashed}}
+    )
+    return {"message": "Password updated successfully"}

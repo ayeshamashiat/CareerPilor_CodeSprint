@@ -1,0 +1,10 @@
+[33m15eebc6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge branch 'main' of https://github.com/ayeshamashiat/CareerPilor_CodeSprint
+[33m4315801[m feat(fit): enhance scoring logic with AI-powered analysis and hybrid scoring method
+[33m8019d21[m Merge pull request #6 from ayeshamashiat/feature/profile-ui
+[33m60ac125[m[33m ([m[1;31morigin/feature/profile-ui[m[33m)[m Create profile page ui
+[33m1a89555[m fix(JobHunter): update bar color for percentage and adjust container width
+[33me253136[m fix(jobs): fix cosine similarity and async fit score computation
+[33mba65b85[m Merge branch 'main' of https://github.com/ayeshamashiat/CareerPilor_CodeSprint
+[33m1e57b0c[m feat(jobs): add job search with SerpAPI, fit scores, and AI reasoning
+[33macebc89[m Merge pull request #5 from ayeshamashiat/feature/landingpage-ui
+[33mee4bb9e[m[33m ([m[1;31morigin/feature/landingpage-ui[m[33m)[m change root directory

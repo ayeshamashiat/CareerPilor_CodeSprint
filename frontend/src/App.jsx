@@ -14,6 +14,7 @@ import useAuthStore from './store/authStore'
 import LandingPage from './pages/LandingPage'
 import Profile from './pages/Profile'
 
+
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token)
   return token ? <Layout>{children}</Layout> : <Navigate to="/login" />
