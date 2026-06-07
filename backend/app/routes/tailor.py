@@ -3,16 +3,15 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import os
 import tempfile
+from datetime import datetime
 
 from app.routes.auth import get_current_user
 from app.utils.rag import query_cv
 from app.utils.mongo_client import cv_metadata_collection, tailored_cvs_collection
-from app.utils.cloudinary_client import upload_cv
 from groq import Groq
-from datetime import datetime
-import time
+import cloudinary
+import cloudinary.uploader
 
-# reportlab imports
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
@@ -30,9 +29,7 @@ class TailorRequest(BaseModel):
 
 
 def generate_tailored_content(cv_chunks: list, job_description: str, job_title: str) -> dict:
-    """Use LLM to rewrite CV sections to match the JD."""
     cv_text = "\n\n".join([f"Section:\n{chunk}" for chunk in cv_chunks])
-
     prompt = f"""You are an expert CV writer. Rewrite the user's CV sections to better match the job description below.
 
 RULES:
@@ -53,9 +50,9 @@ USER'S CV SECTIONS:
 Return a JSON object with these exact keys:
 {{
   "summary": "A 2-3 sentence professional summary tailored to this role",
-  "skills": ["skill1", "skill2", "skill3", ...],  
-  "experience": ["Bullet point 1", "Bullet point 2", ...],
-  "projects": ["Project bullet 1", "Project bullet 2", ...],
+  "skills": ["skill1", "skill2", "skill3"],
+  "experience": ["Bullet point 1", "Bullet point 2"],
+  "projects": ["Project bullet 1", "Project bullet 2"],
   "changes_made": "Brief explanation of what was changed and why"
 }}
 
@@ -69,7 +66,6 @@ Return ONLY valid JSON, no markdown, no extra text."""
 
     import json
     raw = response.choices[0].message.content.strip()
-    # Strip markdown fences if present
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
@@ -78,79 +74,43 @@ Return ONLY valid JSON, no markdown, no extra text."""
 
 
 def build_pdf(tailored: dict, job_title: str, user_name: str, output_path: str):
-    """Build a clean PDF from the tailored CV content."""
     doc = SimpleDocTemplate(
-        output_path,
-        pagesize=A4,
-        rightMargin=2*cm,
-        leftMargin=2*cm,
-        topMargin=2*cm,
-        bottomMargin=2*cm
+        output_path, pagesize=A4,
+        rightMargin=2*cm, leftMargin=2*cm,
+        topMargin=2*cm, bottomMargin=2*cm
     )
-
     styles = getSampleStyleSheet()
     story = []
 
-    # Name header
-    name_style = ParagraphStyle(
-        "Name",
-        fontSize=22,
-        fontName="Helvetica-Bold",
-        textColor=colors.HexColor("#5b21b6"),
-        alignment=TA_CENTER,
-        spaceAfter=4
-    )
-    role_style = ParagraphStyle(
-        "Role",
-        fontSize=12,
-        textColor=colors.HexColor("#6b7280"),
-        alignment=TA_CENTER,
-        spaceAfter=12
-    )
-    section_header_style = ParagraphStyle(
-        "SectionHeader",
-        fontSize=11,
-        fontName="Helvetica-Bold",
-        textColor=colors.HexColor("#5b21b6"),
-        spaceBefore=14,
-        spaceAfter=4
-    )
-    body_style = ParagraphStyle(
-        "Body",
-        fontSize=10,
-        leading=14,
-        spaceAfter=3
-    )
-    note_style = ParagraphStyle(
-        "Note",
-        fontSize=9,
-        textColor=colors.HexColor("#6b7280"),
-        fontName="Helvetica-Oblique",
-        spaceBefore=16,
-        spaceAfter=4
-    )
+    name_style = ParagraphStyle("Name", fontSize=22, fontName="Helvetica-Bold",
+        textColor=colors.HexColor("#5b21b6"), alignment=TA_CENTER, spaceAfter=4)
+    role_style = ParagraphStyle("Role", fontSize=12,
+        textColor=colors.HexColor("#6b7280"), alignment=TA_CENTER, spaceAfter=12)
+    section_header_style = ParagraphStyle("SectionHeader", fontSize=11,
+        fontName="Helvetica-Bold", textColor=colors.HexColor("#5b21b6"),
+        spaceBefore=14, spaceAfter=4)
+    body_style = ParagraphStyle("Body", fontSize=10, leading=14, spaceAfter=3)
+    note_style = ParagraphStyle("Note", fontSize=9,
+        textColor=colors.HexColor("#6b7280"), fontName="Helvetica-Oblique",
+        spaceBefore=16, spaceAfter=4)
 
     story.append(Paragraph(user_name, name_style))
     story.append(Paragraph(f"Tailored for: {job_title}" if job_title else "Tailored CV", role_style))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#5b21b6")))
     story.append(Spacer(1, 8))
 
-    # Summary
     if tailored.get("summary"):
         story.append(Paragraph("PROFESSIONAL SUMMARY", section_header_style))
         story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e5e7eb")))
         story.append(Spacer(1, 4))
         story.append(Paragraph(tailored["summary"], body_style))
 
-    # Skills
     if tailored.get("skills"):
         story.append(Paragraph("SKILLS", section_header_style))
         story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e5e7eb")))
         story.append(Spacer(1, 4))
-        skills_text = " • ".join(tailored["skills"])
-        story.append(Paragraph(skills_text, body_style))
+        story.append(Paragraph(" • ".join(tailored["skills"]), body_style))
 
-    # Experience
     if tailored.get("experience"):
         story.append(Paragraph("EXPERIENCE", section_header_style))
         story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e5e7eb")))
@@ -158,7 +118,6 @@ def build_pdf(tailored: dict, job_title: str, user_name: str, output_path: str):
         for bullet in tailored["experience"]:
             story.append(Paragraph(f"• {bullet}", body_style))
 
-    # Projects
     if tailored.get("projects"):
         story.append(Paragraph("PROJECTS", section_header_style))
         story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e5e7eb")))
@@ -166,7 +125,6 @@ def build_pdf(tailored: dict, job_title: str, user_name: str, output_path: str):
         for bullet in tailored["projects"]:
             story.append(Paragraph(f"• {bullet}", body_style))
 
-    # Changes note
     if tailored.get("changes_made"):
         story.append(Spacer(1, 16))
         story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e5e7eb")))
@@ -177,12 +135,10 @@ def build_pdf(tailored: dict, job_title: str, user_name: str, output_path: str):
 
 @router.post("/cv")
 async def tailor_cv(request: TailorRequest, user_id: str = Depends(get_current_user)):
-    # Get user name from metadata
     metadata = await cv_metadata_collection.find_one({"user_id": user_id})
     if not metadata:
         raise HTTPException(404, "No CV found. Please upload your CV first.")
 
-    # RAG: get most relevant CV chunks for this JD
     cv_chunks = query_cv(user_id, request.job_description, top_k=5)
     if not cv_chunks:
         raise HTTPException(404, "No CV content found. Please upload your CV first.")
@@ -192,8 +148,8 @@ async def tailor_cv(request: TailorRequest, user_id: str = Depends(get_current_u
     except Exception as e:
         raise HTTPException(500, f"Failed to generate tailored content: {str(e)}")
 
-    # Build PDF
     user_name = metadata.get("filename", "Candidate").replace(".pdf", "").replace(".docx", "")
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         output_path = tmp.name
 
@@ -202,27 +158,31 @@ async def tailor_cv(request: TailorRequest, user_id: str = Depends(get_current_u
     except Exception as e:
         raise HTTPException(500, f"PDF generation failed: {str(e)}")
 
+    # Upload to Cloudinary for permanent storage
+    try:
+        with open(output_path, 'rb') as f:
+            pdf_bytes = f.read()
+        cloudinary_result = cloudinary.uploader.upload(
+            pdf_bytes,
+            resource_type="raw",
+            public_id=f"tailored_cvs/{user_id}/{request.job_title.replace(' ', '_') or 'role'}",
+            overwrite=True
+        )
+        pdf_url = cloudinary_result["secure_url"]
+    except Exception as e:
+        print(f"Cloudinary upload failed: {e}", flush=True)
+        pdf_url = ""
+
     filename = f"tailored_cv_{request.job_title.replace(' ', '_') or 'role'}.pdf"
 
-    # Read generated pdf bytes to upload to cloudinary
-    with open(output_path, "rb") as f:
-        pdf_bytes = f.read()
-
-    timestamp = int(time.time())
-    job_title_slug = request.job_title.replace(' ', '_').lower() or 'role'
-    cloud_filename = f"tailored_cvs/{job_title_slug}_{timestamp}.pdf"
-    
-    # Upload to Cloudinary
-    cloudinary_url = upload_cv(pdf_bytes, cloud_filename, user_id)
-    
-    # Save to MongoDB
     await tailored_cvs_collection.insert_one({
         "user_id": user_id,
         "job_title": request.job_title,
-        "job_description_snippet": request.job_description[:200],
-        "cloudinary_url": cloudinary_url,
+        "job_description": request.job_description[:200],
         "changes_made": tailored.get("changes_made", ""),
-        "created_at": datetime.utcnow()
+        "created_at": datetime.utcnow(),
+        "filename": filename,
+        "pdf_url": pdf_url
     })
 
     return FileResponse(
@@ -232,12 +192,22 @@ async def tailor_cv(request: TailorRequest, user_id: str = Depends(get_current_u
         headers={"X-Changes-Made": tailored.get("changes_made", "")}
     )
 
+
 @router.get("/history")
-async def get_tailor_history(user_id: str = Depends(get_current_user)):
-    cursor = tailored_cvs_collection.find({"user_id": user_id}).sort("created_at", -1)
+async def get_tailored_history(user_id: str = Depends(get_current_user)):
+    cursor = tailored_cvs_collection.find(
+        {"user_id": user_id},
+        sort=[("created_at", -1)]
+    )
     history = []
     async for doc in cursor:
-        doc["id"] = str(doc["_id"])
-        del doc["_id"]
-        history.append(doc)
+        history.append({
+            "id": str(doc["_id"]),
+            "job_title": doc.get("job_title", ""),
+            "job_description": doc.get("job_description", ""),
+            "changes_made": doc.get("changes_made", ""),
+            "created_at": doc["created_at"].strftime("%b %d, %Y"),
+            "filename": doc.get("filename", ""),
+            "pdf_url": doc.get("pdf_url", "")
+        })
     return {"tailored_cvs": history}

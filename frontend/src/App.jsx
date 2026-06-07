@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import Login from './pages/Login'
-import Register from './pages/Register'
+import AuthModal from './pages/AuthModal'
 import CVUpload from './pages/CVUpload'
 import FitScore from './pages/FitScore'
 import Dashboard from './pages/Dashboard'
@@ -25,8 +24,8 @@ export default function App() {
     <BrowserRouter>
       <Toaster position="top-right" />
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<><LandingPage /><AuthModal defaultMode="login" /></>} />
+        <Route path="/register" element={<><LandingPage /><AuthModal defaultMode="register" /></>} />  
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/cv-upload" element={<ProtectedRoute><CVUpload /></ProtectedRoute>} />
         <Route path="/fit-score" element={<ProtectedRoute><FitScore /></ProtectedRoute>} />
