@@ -7,6 +7,7 @@ from app.routes.chat import router as chat_router
 from app.routes.tailor import router as tailor_router
 from app.routes.interview import router as interview_router
 from app.routes.jobs import router as jobs_router
+import app.utils.cloudinary_client  # initializes cloudinary config at startup
 
 app = FastAPI(title="CareerPilot API", version="1.0.0")
 
