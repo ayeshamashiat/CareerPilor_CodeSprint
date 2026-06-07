@@ -16,7 +16,6 @@ const NAV = [
   { label: 'Upload CV', icon: Upload, to: '/cv-upload' },
   { label: 'Tailor CV', icon: FileText, to: '/tailor-cv' },
   { label: 'Interview Coach', icon: Mic, to: '/interview' },
-  { label: 'Outreach', icon: Send, to: '/outreach' },
 ]
 
 export default function Layout({ children }) {
