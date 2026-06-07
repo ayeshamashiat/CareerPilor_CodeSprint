@@ -1,48 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 import useAuthStore from '../store/authStore'
 import {
-  Send,
-  TrendingUp,
-  Flame,
-  BookOpen,
-  CheckCircle2,
-  Clock,
-  Circle,
-  ChevronRight,
+  FileText, Sparkles, Mic, Target,
+  TrendingUp, Download, ChevronRight,
+  CheckCircle2, AlertCircle,
 } from 'lucide-react'
 
-// ─── mock data (replace with real API calls as you build out the backend) ───
-const MOCK_STATS = {
-  applications: { value: 5, sub: '+3 this week' },
-  skills: { value: 2, sub: 'Docker, Redis' },
-  roadmap: { value: '34%', sub: 'Week 3 of 12' },
-  streak: { value: 7, sub: 'Keep it up! 🔥' },
-}
-
-const MOCK_ROADMAP = [
-  { week: 'Week 1–2', task: 'SQL advanced queries + indexing', status: 'done' },
-  { week: 'Week 3–4', task: 'Docker + containerisation basics', status: 'active' },
-  { week: 'Week 5–6', task: 'Intro to ML with scikit-learn', status: 'todo' },
-  { week: 'Week 7–8', task: 'Apache Kafka fundamentals', status: 'todo' },
-  { week: 'Week 9–12', task: 'Capstone: end-to-end ML pipeline', status: 'todo' },
-]
-
-const MOCK_KANBAN = {
-  Applied: [
-    { title: 'Backend Dev', company: 'ShopUp', source: 'Direct application', date: 'May 20' },
-    { title: 'SWE Intern', company: 'Pathao', source: 'Referral', date: 'May 21' },
-  ],
-  Interviewing: [
-    { title: 'Backend Eng', company: 'bKash', source: 'Technical round scheduled', date: 'Jun 2', highlight: true },
-  ],
-  Offer: [],
-  Rejected: [
-    { title: 'Data Analyst', company: 'BRAC IT', source: 'No feedback given', date: 'May 15', faded: true },
-  ],
-}
-
-// ─── sub-components ──────────────────────────────────────────────────────────
+const API = 'http://localhost:8000/api'
 
 function StatCard({ label, value, sub, icon: Icon, accent }) {
   return (
@@ -57,155 +23,187 @@ function StatCard({ label, value, sub, icon: Icon, accent }) {
   )
 }
 
-function RoadmapBadge({ status }) {
-  if (status === 'done')
-    return (
-      <span className="inline-flex items-center gap-1 text-xs bg-green-950 text-green-400 border border-green-800 px-2 py-0.5 rounded-full mt-1">
-        <CheckCircle2 size={10} /> Done
-      </span>
-    )
-  if (status === 'active')
-    return (
-      <span className="inline-flex items-center gap-1 text-xs bg-violet-950 text-violet-400 border border-violet-800 px-2 py-0.5 rounded-full mt-1">
-        <Clock size={10} /> In progress
-      </span>
-    )
-  return (
-    <span className="inline-flex items-center gap-1 text-xs bg-gray-800 text-gray-500 border border-gray-700 px-2 py-0.5 rounded-full mt-1">
-      <Circle size={10} /> Upcoming
-    </span>
-  )
-}
+export default function Dashboard() {
+  const { user, token } = useAuthStore()
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-function KanbanColumn({ title, cards, count }) {
-  const accentColor = {
-    Applied: 'border-l-blue-500',
-    Interviewing: 'border-l-emerald-500',
-    Offer: 'border-l-violet-500',
-    Rejected: 'border-l-gray-600',
+  useEffect(() => {
+    if (!token) return
+    axios.get(`${API}/dashboard/stats`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => setStats(res.data))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [token])
+
+  const firstName = user?.name?.split(' ')[0] || 'there'
+
+  const handleDownload = (pdfUrl) => {
+    if (!pdfUrl) return
+    const url = pdfUrl.replace('/upload/', '/upload/fl_attachment/')
+    window.open(url, '_blank')
+  }
+
+  const scoreColor = (score) =>
+    score >= 75 ? 'text-green-400' : score >= 55 ? 'text-yellow-400' : 'text-red-400'
+
+  const greetingMsg = () => {
+    if (!stats) return `Good to see you, ${firstName}.`
+    if (!stats.cv.uploaded) return `Good to see you, ${firstName}. Upload your CV to unlock all features.`
+    if (stats.interview_sessions.count > 0)
+      return `Good to see you, ${firstName}. Avg interview score: ${stats.interview_sessions.avg_score}% — keep practising!`
+    return `Good to see you, ${firstName}. Your CV is ready — tailor it or start a mock interview.`
   }
 
   return (
-    <div className="bg-gray-900 rounded-xl p-3 border border-gray-800 flex flex-col min-h-[160px]">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{title}</span>
-        <span className="text-xs bg-gray-800 text-gray-500 border border-gray-700 px-2 py-0.5 rounded-full">{count}</span>
+    <div className="px-6 py-5 space-y-6">
+
+      {/* Greeting */}
+      <div className="bg-violet-950/40 border border-violet-800/40 rounded-xl px-4 py-3 flex items-center gap-3">
+        <TrendingUp size={18} className="text-violet-400 shrink-0" />
+        <p className="text-sm text-violet-200">{greetingMsg()}</p>
       </div>
 
-      {cards.length === 0 ? (
-        <p className="text-xs text-gray-600 text-center mt-4 flex-1">No offers yet — keep going!</p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {cards.map((c, i) => (
-            <div
-              key={i}
-              className={`bg-gray-950 border border-gray-800 rounded-lg p-3 text-xs border-l-2 ${accentColor[title]} ${c.faded ? 'opacity-50' : ''}`}
-            >
-              <p className="font-semibold text-white">
-                {c.title} · <span className="font-normal text-gray-400">{c.company}</span>
-              </p>
-              <p className="text-gray-500 mt-0.5">{c.source}</p>
-              <p className="text-gray-600 mt-1">{c.date}</p>
-            </div>
+      {/* Stat cards */}
+      {loading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-gray-900 rounded-xl p-4 border border-gray-800 h-24 animate-pulse" />
           ))}
         </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <StatCard
+            label="CV Status"
+            value={stats?.cv.uploaded ? 'Uploaded' : 'None'}
+            sub={stats?.cv.filename || 'Go to Upload CV'}
+            icon={FileText}
+            accent={stats?.cv.uploaded ? 'text-green-400' : 'text-gray-500'}
+          />
+          <StatCard
+            label="Tailored CVs"
+            value={stats?.tailored_cvs.count ?? 0}
+            sub="CVs generated"
+            icon={Sparkles}
+            accent="text-violet-400"
+          />
+          <StatCard
+            label="Interview Sessions"
+            value={stats?.interview_sessions.count ?? 0}
+            sub="sessions completed"
+            icon={Mic}
+            accent="text-blue-400"
+          />
+          <StatCard
+            label="Avg Interview Score"
+            value={stats?.interview_sessions.avg_score ? `${stats.interview_sessions.avg_score}%` : '—'}
+            sub={stats?.interview_sessions.count > 0 ? 'across all sessions' : 'No sessions yet'}
+            icon={Target}
+            accent="text-orange-400"
+          />
+        </div>
       )}
-    </div>
-  )
-}
 
-// ─── main component ──────────────────────────────────────────────────────────
-export default function Dashboard() {
-  const user = useAuthStore((s) => s.user)
-  const [stats] = useState(MOCK_STATS)
-  const [roadmap] = useState(MOCK_ROADMAP)
-  const [kanban] = useState(MOCK_KANBAN)
+      {/* Bottom two-column layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
 
-  // Uncomment to fetch real stats once the backend endpoint exists:
-  // useEffect(() => {
-  //   axios.get('http://localhost:8000/api/dashboard/stats', { headers: { Authorization: `Bearer ${token}` } })
-  //     .then(res => setStats(res.data))
-  //     .catch(() => {})
-  // }, [])
-
-  const firstName = user?.name?.split(' ')[0] || 'there'
-  const roadmapDone = roadmap.filter((r) => r.status === 'done').length
-  const roadmapPct = Math.round((roadmapDone / roadmap.length) * 100)
-
-  return (
-      <div className="px-6 py-5 space-y-6">
-
-          {/* Greeting */}
-          <div className="bg-violet-950/40 border border-violet-800/40 rounded-xl px-4 py-3 flex items-center gap-3">
-            <TrendingUp size={18} className="text-violet-400 shrink-0" />
-            <p className="text-sm text-violet-200">
-              Good to see you, <span className="font-semibold">{firstName}</span>. You're on a{' '}
-              <span className="font-semibold text-violet-300">7-day streak</span> — keep the momentum going!
-            </p>
+        {/* Recent Tailored CVs */}
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Recent Tailored CVs</h2>
+            <Link to="/tailor-cv" className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-0.5 transition">
+              Go to Tailor CV <ChevronRight size={12} />
+            </Link>
           </div>
 
-          {/* Stat cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <StatCard label="Applications sent" value={stats.applications.value} sub={stats.applications.sub} icon={Send} accent="text-blue-400" />
-            <StatCard label="Skills added" value={stats.skills.value} sub={stats.skills.sub} icon={BookOpen} accent="text-emerald-400" />
-            <StatCard label="Roadmap progress" value={stats.roadmap.value} sub={stats.roadmap.sub} icon={TrendingUp} accent="text-violet-400" />
-            <StatCard label="Day streak" value={stats.streak.value} sub={stats.streak.sub} icon={Flame} accent="text-orange-400" />
-          </div>
-
-          {/* Bottom two-column layout */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-
-            {/* Learning Roadmap */}
-            <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Learning Roadmap</h2>
-                <span className="text-xs text-violet-400 font-semibold">{roadmapPct}% done</span>
-              </div>
-              <p className="text-xs text-gray-600 mb-4">Backend → ML-ready</p>
-
-              {/* Progress bar */}
-              <div className="w-full bg-gray-800 rounded-full h-1.5 mb-5">
-                <div
-                  className="bg-violet-500 h-1.5 rounded-full transition-all duration-700"
-                  style={{ width: `${roadmapPct}%` }}
-                />
-              </div>
-
-              <div className="space-y-0">
-                {roadmap.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex gap-4 py-3 border-b border-gray-800 last:border-0 items-start"
-                  >
-                    <span className="text-xs font-medium text-gray-600 min-w-[56px] pt-0.5">{item.week}</span>
-                    <div>
-                      <p className={`text-sm ${item.status === 'done' ? 'text-gray-500 line-through' : item.status === 'active' ? 'text-white' : 'text-gray-400'}`}>
-                        {item.task}
-                      </p>
-                      <RoadmapBadge status={item.status} />
-                    </div>
+          {loading ? (
+            <div className="space-y-2">
+              {[...Array(3)].map((_, i) => <div key={i} className="h-16 bg-gray-800 rounded-lg animate-pulse" />)}
+            </div>
+          ) : stats?.tailored_cvs.recent.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <AlertCircle size={24} className="text-gray-600 mb-2" />
+              <p className="text-sm text-gray-500">No tailored CVs yet.</p>
+              <Link to="/tailor-cv" className="text-xs text-violet-400 hover:underline mt-1">Generate one →</Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {stats.tailored_cvs.recent.map((cv) => (
+                <div key={cv.id} className="bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-white truncate">{cv.job_title || 'Untitled'}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{cv.created_at}</p>
+                    {cv.changes_made && (
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-1">{cv.changes_made}</p>
+                    )}
                   </div>
-                ))}
-              </div>
+                  {cv.pdf_url && (
+                    <button
+                      onClick={() => handleDownload(cv.pdf_url)}
+                      className="p-1.5 rounded-lg text-gray-500 hover:text-violet-400 hover:bg-gray-800 transition shrink-0"
+                      title="Download"
+                    >
+                      <Download size={14} />
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
+          )}
+        </div>
 
-            {/* Kanban */}
-            <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Application Tracker</h2>
-                <Link to="/tracker" className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-0.5 transition">
-                  View full <ChevronRight size={12} />
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                {Object.entries(kanban).map(([col, cards]) => (
-                  <KanbanColumn key={col} title={col} cards={cards} count={cards.length} />
-                ))}
-              </div>
-            </div>
-
+        {/* Recent Interview Sessions */}
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Recent Interview Sessions</h2>
+            <Link to="/interview" className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-0.5 transition">
+              Go to Coach <ChevronRight size={12} />
+            </Link>
           </div>
+
+          {loading ? (
+            <div className="space-y-2">
+              {[...Array(3)].map((_, i) => <div key={i} className="h-16 bg-gray-800 rounded-lg animate-pulse" />)}
+            </div>
+          ) : stats?.interview_sessions.recent.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <AlertCircle size={24} className="text-gray-600 mb-2" />
+              <p className="text-sm text-gray-500">No interview sessions yet.</p>
+              <Link to="/interview" className="text-xs text-violet-400 hover:underline mt-1">Start a session →</Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {stats.interview_sessions.recent.map((s) => (
+                <div key={s.id} className="bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-white truncate">{s.job_title || 'Untitled'}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{s.created_at} · {s.questions_count} questions</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className={`text-sm font-bold ${scoreColor(s.overall_score)}`}>{s.overall_score}%</p>
+                    <p className="text-xs text-gray-500">{s.readiness_level}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
       </div>
+
+      {/* CV not uploaded warning */}
+      {!loading && !stats?.cv.uploaded && (
+        <div className="bg-amber-950/30 border border-amber-800/40 rounded-xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <AlertCircle size={16} className="text-amber-400 shrink-0" />
+            <p className="text-sm text-amber-200">No CV uploaded. Most features require a CV to work.</p>
+          </div>
+          <Link to="/cv-upload" className="text-xs text-amber-400 hover:underline shrink-0">Upload now →</Link>
+        </div>
+      )}
+
+    </div>
   )
 }
