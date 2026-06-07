@@ -96,24 +96,25 @@ INTERVIEW QUESTION:
 CANDIDATE'S ANSWER:
 {request.answer}
 
-Evaluate the answer using the STAR framework (Situation, Task, Action, Result).
+Evaluate using the STAR framework. Return ONLY this JSON structure with no extra text or markdown:
 
-Return a JSON object with these exact keys:
 {{
   "star_scores": {{
-    "situation": {{"score": 0, "feedback": "..."}},
-    "task": {{"score": 0, "feedback": "..."}},
-    "action": {{"score": 0, "feedback": "..."}},
-    "result": {{"score": 0, "feedback": "..."}}
+    "situation": {{"score": 7, "feedback": "your feedback here"}},
+    "task": {{"score": 7, "feedback": "your feedback here"}},
+    "action": {{"score": 7, "feedback": "your feedback here"}},
+    "result": {{"score": 7, "feedback": "your feedback here"}}
   }},
-  "overall_score": 0,
+  "overall_score": 70,
   "strengths": ["strength 1", "strength 2"],
   "improvements": ["improvement 1", "improvement 2"],
-  "ideal_answer_hint": "A brief pointer on what an excellent answer would have included"
+  "ideal_answer_hint": "what an ideal answer would include"
 }}
 
-Scores: star scores 0-10, overall_score 0-100.
-Be specific, constructive, and honest. Return ONLY valid JSON."""
+Rules:
+- star score values must be integers between 0 and 10
+- overall_score must be an integer between 0 and 100
+- Return ONLY the JSON object, no markdown, no explanation"""
 
     response = groq_client.chat.completions.create(
         model="llama-3.3-70b-versatile",
