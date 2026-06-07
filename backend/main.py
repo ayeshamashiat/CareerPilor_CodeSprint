@@ -7,13 +7,16 @@ from app.routes.chat import router as chat_router
 from app.routes.tailor import router as tailor_router
 from app.routes.interview import router as interview_router
 from app.routes.jobs import router as jobs_router
-import app.utils.cloudinary_client  # initializes cloudinary config at startup
+import os
+
 
 app = FastAPI(title="CareerPilot API", version="1.0.0")
 
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
