@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
 import {
   User, Mail, Lock, FileText, Trash2, Download,
-  ChevronDown, ChevronUp, Calendar, Sparkles,
+  ChevronDown, ChevronUp, Calendar, Sparkles, Eye, EyeOff,
 } from 'lucide-react'
 
 function SectionHeader({ children }) {
@@ -136,6 +136,7 @@ export default function Profile() {
   const [tailoredCVs, setTailoredCVs] = useState([])
   const [savingPassword, setSavingPassword] = useState(false)
   const [passwords, setPasswords] = useState({ current: '', next: '', confirm: '' })
+  const [showPasswords, setShowPasswords] = useState({ current: false, next: false, confirm: false })
 
   useEffect(() => {
     if (token) {
@@ -165,6 +166,7 @@ export default function Profile() {
       )
       toast.success('Password changed successfully')
       setPasswords({ current: '', next: '', confirm: '' })
+      setShowPasswords({ current: false, next: false, confirm: false })
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Failed to change password')
     } finally {
@@ -215,13 +217,24 @@ export default function Profile() {
           ].map(({ key, label }) => (
             <div key={key} className="flex flex-col gap-1">
               <label className="text-xs text-gray-500">{label}</label>
-              <input
-                type="password"
-                value={passwords[key]}
-                onChange={(e) => setPasswords((p) => ({ ...p, [key]: e.target.value }))}
-                className="bg-gray-800 text-white rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-500 border border-gray-700"
-                placeholder="••••••••"
-              />
+              <div className="relative flex items-center">
+                <input
+                  type={showPasswords[key] ? 'text' : 'password'}
+                  value={passwords[key]}
+                  onChange={(e) => setPasswords((p) => ({ ...p, [key]: e.target.value }))}
+                  className="bg-gray-800 text-white rounded-lg px-3 py-2 pr-9 text-sm outline-none focus:ring-2 focus:ring-violet-500 border border-gray-700 w-full"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label={showPasswords[key] ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPasswords((p) => ({ ...p, [key]: !p[key] }))}
+                  className="absolute right-2.5 text-gray-500 hover:text-gray-300 transition flex items-center justify-center"
+                >
+                  {showPasswords[key] ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
+              </div>
             </div>
           ))}
         </div>
