@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { loginUser, registerUser } from '../api/auth'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
-import { X } from 'lucide-react'
+import { X, Eye, EyeOff } from 'lucide-react'
 
 export default function AuthModal({ defaultMode = 'login' }) {
   const navigate = useNavigate()
@@ -11,10 +11,11 @@ export default function AuthModal({ defaultMode = 'login' }) {
   const [mode, setMode] = useState(defaultMode)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
   const handleClose = () => navigate('/')
-  const switchMode = (next) => { setMode(next); setForm({ name: '', email: '', password: '' }) }
+  const switchMode = (next) => { setMode(next); setForm({ name: '', email: '', password: '' }); setShowPassword(false) }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -118,6 +119,18 @@ export default function AuthModal({ defaultMode = 'login' }) {
       color: '#a78bfa', fontSize: '0.75rem',
       fontFamily: 'DM Sans, sans-serif', padding: 0,
     },
+    passwordWrap: {
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+    },
+    eyeBtn: {
+      position: 'absolute', right: '12px',
+      background: 'none', border: 'none', cursor: 'pointer',
+      color: '#6b7280', padding: '4px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      lineHeight: 0,
+    },
   }
 
   return (
@@ -162,11 +175,22 @@ export default function AuthModal({ defaultMode = 'login' }) {
 
           <div style={s.fieldWrap}>
             <label style={s.label}>Password</label>
-            <input
-              type="password" name="password" value={form.password}
-              onChange={handleChange} required
-              placeholder="••••••••" style={s.input}
-            />
+            <div style={s.passwordWrap}>
+              <input
+                type={showPassword ? 'text' : 'password'} name="password" value={form.password}
+                onChange={handleChange} required
+                placeholder="••••••••" style={{ ...s.input, paddingRight: '2.5rem' }}
+              />
+              <button
+                type="button"
+                style={s.eyeBtn}
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+              </button>
+            </div>
           </div>
 
           <button type="submit" disabled={loading} style={s.submitBtn(loading)}>
