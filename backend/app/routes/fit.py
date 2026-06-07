@@ -5,9 +5,9 @@ from app.utils.chroma_client import get_cv_collection
 from app.routes.auth import get_current_user
 from app.utils.rag import generate_fit_analysis
 from groq import Groq
-import numpy as np
 import os
 import json
+import math
 
 router = APIRouter()
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -19,13 +19,17 @@ class FitScoreRequest(BaseModel):
     job_title: str = ""
 
 def cosine_similarity(a, b):
-    a = np.array(a, dtype=float).flatten()
-    b = np.array(b, dtype=float).flatten()
-    norm_a = float(np.linalg.norm(a))
-    norm_b = float(np.linalg.norm(b))
-    if norm_a == 0.0 or norm_b == 0.0:
+    # If the inputs are nested lists, we assume they represent a single vector, so we flatten them if necessary, 
+    # but chroma returns flat lists for embeddings anyway.
+    if hasattr(a[0], '__iter__'): a = a[0]
+    if hasattr(b[0], '__iter__'): b = b[0]
+    
+    dot_product = sum(float(x) * float(y) for x, y in zip(a, b))
+    magnitude_a = math.sqrt(sum(float(x) * float(x) for x in a))
+    magnitude_b = math.sqrt(sum(float(x) * float(x) for x in b))
+    if magnitude_a == 0.0 or magnitude_b == 0.0:
         return 0.0
-    return float(np.dot(a, b) / (norm_a * norm_b))
+    return float(dot_product / (magnitude_a * magnitude_b))
 
 def hybrid_score(jd_text: str, cv_text: str, embedding_sim: float) -> float:
     jd_words = set(jd_text.lower().split()) - STOP_WORDS
