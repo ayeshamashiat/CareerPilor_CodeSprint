@@ -9,6 +9,7 @@ from app.routes.auth import get_current_user
 from app.utils.rag import query_cv
 from app.utils.mongo_client import cv_metadata_collection, tailored_cvs_collection
 from groq import Groq
+from app.utils.cloudinary_client import init_cloudinary
 import cloudinary
 import cloudinary.uploader
 
@@ -160,6 +161,7 @@ async def tailor_cv(request: TailorRequest, user_id: str = Depends(get_current_u
 
     # Upload to Cloudinary for permanent storage
     try:
+        init_cloudinary()
         with open(output_path, 'rb') as f:
             pdf_bytes = f.read()
         cloudinary_result = cloudinary.uploader.upload(

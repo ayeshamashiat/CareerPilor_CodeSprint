@@ -9,12 +9,18 @@ from app.routes.interview import router as interview_router
 from app.routes.jobs import router as jobs_router
 import app.utils.cloudinary_client  
 from app.routes.tracker import router as tracker_router
+import app.utils.cloudinary_client  # initializes cloudinary config at startup
+from app.routes.dashboard import router as dashboard_router
+import os
+
 
 app = FastAPI(title="CareerPilot API", version="1.0.0")
 
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,6 +34,7 @@ app.include_router(tailor_router, prefix="/api/tailor", tags=["CV Tailor"])
 app.include_router(interview_router, prefix="/api/interview", tags=["Interview Coach"])
 app.include_router(jobs_router, prefix="/api/jobs", tags=["Jobs"])
 app.include_router(tracker_router, prefix="/api/tracker", tags=["Tracker"])
+app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
 
 @app.get("/health")
 async def health():
