@@ -2,10 +2,18 @@ import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 import {
-  LayoutDashboard, MessageSquare, Briefcase,
-  FileText, Target, Mic, Send, Zap, Upload, LogOut
+  LayoutDashboard,
+  MessageSquare,
+  Briefcase,
+  FileText,
+  Target,
+  Mic,
+  Upload,
+  LogOut,
+  User,
+  BarChart2,
 } from 'lucide-react'
-import { User } from 'lucide-react'
+
 
 const NAV = [
   { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
@@ -16,6 +24,7 @@ const NAV = [
   { label: 'Upload CV', icon: Upload, to: '/cv-upload' },
   { label: 'Tailor CV', icon: FileText, to: '/tailor-cv' },
   { label: 'Interview Coach', icon: Mic, to: '/interview' },
+  { label: 'Tracker', icon: BarChart2, to: '/tracker' },
 ]
 
 export default function Layout({ children }) {
