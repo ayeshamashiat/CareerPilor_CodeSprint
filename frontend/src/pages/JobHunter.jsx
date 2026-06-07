@@ -193,10 +193,25 @@ const [loading, setLoading] = useState(false)
     }
   }
 
-  const handleSave = (job) => {
-    toast.success(`${job.title} at ${job.company} saved to tracker`)
-    // TODO: POST to /api/tracker/add with job data
+  const handleSave = async (job) => {
+  try {
+    await axios.post(
+      'http://localhost:8000/api/tracker/applications',
+      {
+        role: job.title,
+        company: job.company,
+        location: job.location || '',
+        source: 'Job Hunter',
+        notes: job.explanation || '',
+        deadline: job.deadline || '',
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    toast.success('Saved to Tracker')
+  } catch {
+    toast.error('Failed to save')
   }
+}
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch()

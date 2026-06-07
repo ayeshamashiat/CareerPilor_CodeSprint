@@ -12,6 +12,7 @@ import Layout from './components/Layout'
 import useAuthStore from './store/authStore'
 import LandingPage from './pages/LandingPage'
 import Profile from './pages/Profile'
+import Tracker from './pages/Tracker'
 
 
 function ProtectedRoute({ children }) {
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/interview" element={<ProtectedRoute><InterviewCoach /></ProtectedRoute>} />
         <Route path="/jobs" element={<ProtectedRoute><JobHunter /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/tracker" element={<ProtectedRoute><Tracker /></ProtectedRoute>} />
         <Route path="/" element={<LandingPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

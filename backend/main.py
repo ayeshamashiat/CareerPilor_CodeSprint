@@ -7,6 +7,8 @@ from app.routes.chat import router as chat_router
 from app.routes.tailor import router as tailor_router
 from app.routes.interview import router as interview_router
 from app.routes.jobs import router as jobs_router
+import app.utils.cloudinary_client  
+from app.routes.tracker import router as tracker_router
 import app.utils.cloudinary_client  # initializes cloudinary config at startup
 from app.routes.dashboard import router as dashboard_router
 import os
@@ -31,6 +33,7 @@ app.include_router(chat_router, prefix="/api/chat", tags=["Chat"])
 app.include_router(tailor_router, prefix="/api/tailor", tags=["CV Tailor"])
 app.include_router(interview_router, prefix="/api/interview", tags=["Interview Coach"])
 app.include_router(jobs_router, prefix="/api/jobs", tags=["Jobs"])
+app.include_router(tracker_router, prefix="/api/tracker", tags=["Tracker"])
 app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
 
 @app.get("/health")
