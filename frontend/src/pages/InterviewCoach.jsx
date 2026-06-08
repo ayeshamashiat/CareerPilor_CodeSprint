@@ -43,10 +43,25 @@ export default function InterviewCoach() {
   const [sessionSaved, setSessionSaved] = useState(false)
   const [sessions, setSessions] = useState([])
   const [showSessions, setShowSessions] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
 
   const recognitionRef = useRef(null)
   const answerRef = useRef(answer)
   useEffect(() => { answerRef.current = answer }, [answer])
+
+  
+useEffect(() => {
+  const prime = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      const u = new SpeechSynthesisUtterance('')
+      window.speechSynthesis.speak(u)
+    }
+    window.removeEventListener('click', prime)
+  }
+  window.addEventListener('click', prime)
+  return () => window.removeEventListener('click', prime)
+}, [])
 
   // Speech recognition setup
   useEffect(() => {
@@ -108,11 +123,35 @@ export default function InterviewCoach() {
   }
 
   const speakQuestion = (text) => {
-    if ('speechSynthesis' in window) {
+    if (!('speechSynthesis' in window)) return
+    window.speechSynthesis.cancel()
+    setIsSpeaking(false)
+
+    const doSpeak = () => {
       window.speechSynthesis.cancel()
+      window.speechSynthesis.resume()
       const utter = new SpeechSynthesisUtterance(text)
       utter.rate = 0.9
+      utter.volume = 1
+      // pick first English voice if available
+      const voices = window.speechSynthesis.getVoices()
+      const engVoice = voices.find(v => v.lang.startsWith('en'))
+      if (engVoice) utter.voice = engVoice
+      utter.onstart = () => setIsSpeaking(true)
+      utter.onend = () => setIsSpeaking(false)
+      utter.onerror = () => setIsSpeaking(false)
       window.speechSynthesis.speak(utter)
+    }
+
+    const voices = window.speechSynthesis.getVoices()
+    if (voices.length > 0) {
+      doSpeak()
+    } else {
+      // voices not loaded yet — wait for them
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null
+        doSpeak()
+      }
     }
   }
 
@@ -458,10 +497,14 @@ export default function InterviewCoach() {
         <div className="bg-gray-900 rounded-2xl p-6 mb-4">
           <div className="flex items-start justify-between gap-4">
             <p className="text-white text-lg leading-relaxed">{questions[currentQ]}</p>
-            <button onClick={() => speakQuestion(questions[currentQ])}
-              className="text-violet-400 hover:text-violet-300 shrink-0" title="Read aloud">
-              <Volume2 size={18} />
-            </button>
+            <button onClick={() => {
+    if (isSpeaking) { window.speechSynthesis.cancel(); setIsSpeaking(false) }
+    else speakQuestion(questions[currentQ])
+  }}
+  className={`shrink-0 transition ${isSpeaking ? 'text-red-400 hover:text-red-300 animate-pulse' : 'text-violet-400 hover:text-violet-300'}`}
+  title={isSpeaking ? 'Click to stop' : 'Read aloud'}>
+  <Volume2 size={18} />
+</button>
           </div>
         </div>
 
