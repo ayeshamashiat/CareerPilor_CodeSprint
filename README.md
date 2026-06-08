@@ -166,9 +166,9 @@ Built at **IUTCS CodeSprint 2026** by a three-person team from Islamic Universit
 
 | Member | Role | Responsibilities |
 |---|---|---|
-| Israt Risha Ivey | Backend & RAG | CV upload pipeline, text extraction & chunking, ChromaDB vector store, job hunter agent with tool-calling, fit score computation, FastAPI endpoints, DB schema |
+| Israt Risha Ivey | Backend & RAG | CV upload pipeline, text extraction & chunking, ChromaDB vector store, job hunter agent with tool-calling, fit score computation, FastAPI endpoints, DB schema, demo video |
 | Ayesha Mashiat | AI Agents & LLM | RAG chat assistant, auto-tailored CV PDF generator, voice interview coach, Docker/Nginx load balancer setup |
-| Nishat Tasnim Preownti | Frontend & UI | React UI components, kanban tracker, dashboard, calendar view, recruiter outreach generator, demo video |
+| Nishat Tasnim Preownti | Frontend & UI | React UI components, kanban tracker, dashboard, calendar view, recruiter outreach generator|
 
 ---
 
