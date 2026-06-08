@@ -70,10 +70,10 @@ propcache==0.5.2
 protobuf==6.33.6
 pyasn1==0.6.3
 pybase64==1.4.3
-pydantic==2.13.4
+pydantic==2.10.6
 pydantic-extra-types==2.11.1
 pydantic-settings==2.14.1
-pydantic_core>=2.27.0
+pydantic_core==2.27.2
 Pygments==2.20.0
 pymongo==4.17.0
 PyMuPDF==1.27.2.3

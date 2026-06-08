@@ -4,14 +4,15 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-# Install CPU-only torch first (avoids 6GB CUDA libraries)
+# CPU-only torch first
 RUN pip install --no-cache-dir torch==2.12.0 --index-url https://download.pytorch.org/whl/cpu
 
-# Install pydantic-core with a version that has Linux wheels
-RUN pip install --no-cache-dir pydantic-core==2.27.2
+# Install everything from requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install everything else without re-resolving deps
-RUN pip install --no-cache-dir -r requirements.txt --no-deps
+# Force downgrade pydantic to compatible version AFTER requirements
+# This overrides the 2.13.4 that requirements.txt installs
+RUN pip install --no-cache-dir --force-reinstall "pydantic==2.10.6" "pydantic-core==2.27.2"
 
 COPY . .
 
