@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginUser, registerUser } from '../api/auth'
 import useAuthStore from '../store/authStore'
+import useThemeStore from '../store/themeStore'
 import toast from 'react-hot-toast'
 import { X, Eye, EyeOff } from 'lucide-react'
 
 export default function AuthModal({ defaultMode = 'login' }) {
   const navigate = useNavigate()
   const setAuth = useAuthStore((s) => s.setAuth)
+  const isDark = useThemeStore((s) => s.theme === 'dark')
   const [mode, setMode] = useState(defaultMode)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [loading, setLoading] = useState(false)
@@ -48,12 +50,12 @@ export default function AuthModal({ defaultMode = 'login' }) {
     },
     card: {
       width: '100%', maxWidth: '440px',
-      backgroundColor: '#111827',
-      border: '1px solid #1f2937',
+      backgroundColor: isDark ? '#111827' : '#f9fafb',
+      border: isDark ? '1px solid #1f2937' : '1px solid #e5e7eb',
       borderRadius: '16px',
       padding: '2rem',
       position: 'relative',
-      boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
+      boxShadow: isDark ? '0 25px 60px rgba(0,0,0,0.5)' : '0 25px 60px rgba(15,23,42,0.15)',
       fontFamily: 'DM Sans, sans-serif',
     },
     closeBtn: {
@@ -64,7 +66,7 @@ export default function AuthModal({ defaultMode = 'login' }) {
     },
     tabRow: {
       display: 'flex', gap: '4px',
-      backgroundColor: '#1f2937',
+      backgroundColor: isDark ? '#1f2937' : '#f3f4f6',
       borderRadius: '10px', padding: '4px',
       marginBottom: '1.75rem',
     },
@@ -74,29 +76,29 @@ export default function AuthModal({ defaultMode = 'login' }) {
       border: 'none', borderRadius: '8px', cursor: 'pointer',
       transition: 'all 0.2s',
       backgroundColor: active ? '#7c3aed' : 'transparent',
-      color: active ? '#fff' : '#9ca3af',
+      color: active ? '#fff' : (isDark ? '#9ca3af' : '#6b7280'),
       fontFamily: 'DM Sans, sans-serif',
     }),
     heading: {
       fontSize: '1.5rem', fontWeight: 700,
-      color: '#fff', marginBottom: '4px',
+      color: isDark ? '#fff' : '#111827', marginBottom: '4px',
       fontFamily: 'Syne, DM Sans, sans-serif',
     },
     subtext: {
-      fontSize: '0.875rem', color: '#9ca3af',
+      fontSize: '0.875rem', color: isDark ? '#9ca3af' : '#6b7280',
       marginBottom: '1.5rem',
     },
     fieldWrap: { marginBottom: '1rem' },
     label: {
       display: 'block', fontSize: '0.75rem',
-      color: '#9ca3af', marginBottom: '6px',
+      color: isDark ? '#9ca3af' : '#6b7280', marginBottom: '6px',
       fontFamily: 'DM Sans, sans-serif',
     },
     input: {
-      width: '100%', backgroundColor: '#1f2937',
-      border: '1px solid #374151', borderRadius: '8px',
+      width: '100%', backgroundColor: isDark ? '#1f2937' : '#f3f4f6',
+      border: isDark ? '1px solid #374151' : '1px solid #e5e7eb', borderRadius: '8px',
       padding: '12px 16px', fontSize: '0.875rem',
-      color: '#fff', outline: 'none',
+      color: isDark ? '#fff' : '#111827', outline: 'none',
       boxSizing: 'border-box',
       fontFamily: 'DM Sans, sans-serif',
     },
@@ -116,7 +118,7 @@ export default function AuthModal({ defaultMode = 'login' }) {
     },
     switchBtn: {
       background: 'none', border: 'none', cursor: 'pointer',
-      color: '#a78bfa', fontSize: '0.75rem',
+      color: isDark ? '#a78bfa' : '#7c3aed', fontSize: '0.75rem',
       fontFamily: 'DM Sans, sans-serif', padding: 0,
     },
     passwordWrap: {

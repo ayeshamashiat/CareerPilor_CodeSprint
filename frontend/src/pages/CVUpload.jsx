@@ -78,7 +78,7 @@ export default function CVUpload() {
   }
 
   if (checking) {
-    return <div className="flex items-center justify-center py-20 text-gray-400">Loading...</div>
+    return <div className="flex items-center justify-center py-20 text-gray-500 dark:text-gray-400">Loading...</div>
   }
 
   // Render Completeness UI Helper
@@ -87,10 +87,10 @@ export default function CVUpload() {
     return (
       <div className="mb-4">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-gray-400 text-sm">CV Completeness</span>
-          <span className="text-violet-400 font-bold">{comp.score}%</span>
+          <span className="text-gray-500 dark:text-gray-400 text-sm">CV Completeness</span>
+          <span className="text-violet-600 dark:text-violet-400 font-bold">{comp.score}%</span>
         </div>
-        <div className="w-full bg-gray-700 rounded-full h-2">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
             className="bg-violet-500 h-2 rounded-full transition-all"
             style={{ width: `${comp.score}%` }}
@@ -98,9 +98,9 @@ export default function CVUpload() {
         </div>
         <div className="flex justify-between mt-1">
           <span className={`text-xs font-medium ${
-            comp.level === 'Excellent' ? 'text-green-400' :
-            comp.level === 'Good' ? 'text-blue-400' :
-            comp.level === 'Fair' ? 'text-yellow-400' : 'text-red-400'
+            comp.level === 'Excellent' ? 'text-green-600 dark:text-green-400' :
+            comp.level === 'Good' ? 'text-blue-600 dark:text-blue-400' :
+            comp.level === 'Fair' ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
           }`}>{comp.level}</span>
           {comp.missing?.length > 0 && (
             <span className="text-xs text-gray-500">
@@ -120,21 +120,21 @@ export default function CVUpload() {
 
     return (
       <div className="flex flex-col items-center justify-center px-4 py-10">
-        <div className="w-full max-w-lg bg-gray-900 rounded-2xl p-8 shadow-xl">
-          <h1 className="text-3xl font-bold text-white mb-2">Your current CV</h1>
-          <p className="text-gray-400 mb-8">This is your active career profile.</p>
+        <div className="w-full max-w-lg bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 shadow-xl">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Your current CV</h1>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">This is your active career profile.</p>
 
-          <div className="bg-gray-800 rounded-xl p-5 mb-6">
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-5 mb-6">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-violet-400 font-medium truncate max-w-[200px]" title={cvInfo.filename}>
+                <p className="text-violet-600 dark:text-violet-400 font-medium truncate max-w-[200px]" title={cvInfo.filename}>
                   {cvInfo.filename}
                 </p>
                 <p className="text-gray-500 text-sm">Uploaded {uploadDate}</p>
               </div>
               <button
                 onClick={() => window.open(cvInfo.cloudinary_url, '_blank')}
-                className="text-sm bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded-lg transition"
+                className="text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white py-1 px-3 rounded-lg transition"
               >
                 View PDF
               </button>
@@ -143,19 +143,19 @@ export default function CVUpload() {
             {renderCompleteness(cvInfo.completeness)}
 
             <div className="mt-4">
-              <p className="text-green-400 text-sm font-semibold mb-2">Sections indexed:</p>
+              <p className="text-green-600 dark:text-green-400 text-sm font-semibold mb-2">Sections indexed:</p>
               <div className="flex flex-wrap gap-2">
                 {cvInfo.sections_indexed?.map((s) => (
-                  <span key={s} className="bg-violet-900 text-violet-300 px-3 py-1 rounded-full text-xs capitalize">
+                  <span key={s} className="bg-violet-100 dark:bg-violet-900 text-violet-700 dark:text-violet-300 px-3 py-1 rounded-full text-xs capitalize">
                     {s}
                   </span>
                 ))}
               </div>
             </div>
           </div>
-          
+
           {greeting && (
-            <p className="text-gray-300 italic mb-6 border-l-4 border-violet-500 pl-3">
+            <p className="text-gray-700 dark:text-gray-300 italic mb-6 border-l-4 border-violet-500 pl-3">
               {greeting}
             </p>
           )}
@@ -169,7 +169,7 @@ export default function CVUpload() {
             </button>
             <button
               onClick={() => setReplaceMode(true)}
-              className="flex-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white font-semibold py-3 rounded-lg transition"
+              className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white font-semibold py-3 rounded-lg transition"
             >
               Replace CV
             </button>
@@ -182,26 +182,26 @@ export default function CVUpload() {
   // Mode A: Upload Form (First time or Replacing)
   return (
       <div className="flex items-center justify-center px-4 py-10">
-        <div className="w-full max-w-lg bg-gray-900 rounded-2xl p-8 shadow-xl">
+        <div className="w-full max-w-lg bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 shadow-xl">
           <div className="flex justify-between items-center mb-2">
-            <h1 className="text-3xl font-bold text-white">Upload your CV</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Upload your CV</h1>
             {replaceMode && (
-              <button onClick={() => setReplaceMode(false)} className="text-gray-400 hover:text-white text-sm">
+              <button onClick={() => setReplaceMode(false)} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm">
                 Cancel
               </button>
             )}
           </div>
-          <p className="text-gray-400 mb-8">PDF or DOCX — this becomes your career profile</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">PDF or DOCX — this becomes your career profile</p>
 
           <div
-            className="border-2 border-dashed border-gray-700 rounded-xl p-10 text-center cursor-pointer hover:border-violet-500 transition"
+            className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-10 text-center cursor-pointer hover:border-violet-500 transition"
             onClick={() => document.getElementById('cv-input').click()}
           >
             {file ? (
-              <p className="text-violet-400 font-medium">{file.name}</p>
+              <p className="text-violet-600 dark:text-violet-400 font-medium">{file.name}</p>
             ) : (
               <>
-                <p className="text-gray-400 text-lg mb-1">Click to select file</p>
+                <p className="text-gray-500 dark:text-gray-400 text-lg mb-1">Click to select file</p>
                 <p className="text-gray-600 text-sm">PDF or DOCX only</p>
               </>
             )}

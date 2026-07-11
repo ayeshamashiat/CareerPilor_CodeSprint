@@ -1,10 +1,44 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import ThemeToggle from '../components/ThemeToggle'
 
 const styles = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
+    --bg: #ffffff;
+    --bg2: #f7f6fb;
+    --bg3: #efedf7;
+    --border: rgba(15,23,42,0.08);
+    --border-light: rgba(15,23,42,0.14);
+    --violet: #7c3aed;
+    --violet-light: #8b5cf6;
+    --violet-dim: rgba(124,58,237,0.10);
+    --violet-glow: rgba(124,58,237,0.25);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.12);
+    --text: #17151f;
+    --text-muted: #5b586b;
+    --text-dim: #78748c;
+    --green: #10b981;
+    --green-dim: rgba(16,185,129,0.10);
+    --blue: #3b82f6;
+
+    /* theme-only helper tokens (not present in the original dark-only design) */
+    --nav-bg: rgba(255,255,255,0.85);
+    --card-recessed: #ffffff;
+    --track-bg: rgba(15,23,42,0.07);
+    --subtle-fill: rgba(15,23,42,0.04);
+    --accent-text: #6d28d9;
+    --accent-text-strong: #6d28d9;
+    --accent-text-soft: #7c3aed;
+    --accent-text-green: #059669;
+    --hero-gradient: linear-gradient(90deg, #7c3aed 0%, #6d28d9 30%, #5b21b6 70%, #4c1d95 100%);
+    --border-hover-a: rgba(15,23,42,0.22);
+    --border-hover-b: rgba(15,23,42,0.26);
+  }
+
+  .dark {
     --bg: #0a0a0f;
     --bg2: #0f0f18;
     --bg3: #141420;
@@ -14,14 +48,26 @@ const styles = `
     --violet-light: #8b5cf6;
     --violet-dim: rgba(124,58,237,0.15);
     --violet-glow: rgba(124,58,237,0.25);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.16);
     --text: #f1f0ff;
     --text-muted: #8b8a9b;
     --text-dim: #4a4959;
     --green: #10b981;
     --green-dim: rgba(16,185,129,0.15);
-    --amber: #f59e0b;
-    --amber-dim: rgba(245,158,11,0.12);
     --blue: #3b82f6;
+
+    --nav-bg: rgba(10,10,15,0.85);
+    --card-recessed: #0a0a14;
+    --track-bg: rgba(255,255,255,0.07);
+    --subtle-fill: rgba(255,255,255,0.04);
+    --accent-text: #a78bfa;
+    --accent-text-strong: #8b5cf6;
+    --accent-text-soft: #c4b5fd;
+    --accent-text-green: #34d399;
+    --hero-gradient: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 30%, #7c3aed 70%, #6d28d9 100%);
+    --border-hover-a: rgba(255,255,255,0.25);
+    --border-hover-b: rgba(255,255,255,0.3);
   }
 
   html { scroll-behavior: smooth; }
@@ -29,13 +75,13 @@ const styles = `
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 16px;
     line-height: 1.6;
     overflow-x: hidden;
   }
 
-  h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+  h1,h2,h3,h4 { font-family: 'Fraunces', serif; }
 
   /* ── TOPBAR ── */
   nav {
@@ -47,7 +93,7 @@ const styles = `
     justify-content: space-between;
     padding: 0 2.5rem;
     height: 60px;
-    background: rgba(10,10,15,0.85);
+    background: var(--nav-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
@@ -57,8 +103,8 @@ const styles = `
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
     font-size: 1.1rem;
     color: var(--text);
     text-decoration: none;
@@ -96,7 +142,7 @@ const styles = `
   }
 
   .btn-ghost {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-muted);
@@ -109,10 +155,10 @@ const styles = `
     transition: all 0.2s;
     display: inline-flex; align-items: center;
   }
-  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.25); background: var(--bg3); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--border-hover-a); background: var(--bg3); }
 
   .btn-primary {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.875rem;
     font-weight: 500;
     color: #fff;
@@ -128,7 +174,7 @@ const styles = `
   .btn-primary:hover { background: var(--violet-light); transform: translateY(-1px); }
 
   .btn-primary-lg {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1rem;
     font-weight: 500;
     color: #fff;
@@ -144,7 +190,7 @@ const styles = `
   .btn-primary-lg:hover { background: var(--violet-light); transform: translateY(-2px); box-shadow: 0 8px 30px var(--violet-glow); }
 
   .btn-outline-lg {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1rem;
     font-weight: 400;
     color: var(--text-muted);
@@ -157,332 +203,206 @@ const styles = `
     transition: all 0.2s;
     display: inline-flex; align-items: center; gap: 8px;
   }
-  .btn-outline-lg:hover { color: var(--text); border-color: rgba(255,255,255,0.3); background: var(--bg3); }
+  .btn-outline-lg:hover { color: var(--text); border-color: var(--border-hover-b); background: var(--bg3); }
 
   /* ── HERO ── */
   .hero {
-    padding: 90px 2.5rem 60px;
-    max-width: 1100px;
+    padding: 130px 2.5rem 90px;
+    max-width: 1180px;
     margin: 0 auto;
     position: relative;
 
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 3.5rem;
+    align-items: center;
+  }
+
+  .hero-copy {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--violet-dim);
-    border: 1px solid rgba(124,58,237,0.3);
-    border-radius: 999px;
-    padding: 0.35rem 0.9rem;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: #a78bfa;
-    margin-bottom: 2rem;
-    letter-spacing: 0.02em;
-  }
-
-  .hero-badge .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #a78bfa;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    align-items: flex-start;
+    text-align: left;
   }
 
   .hero-title {
-  max-width: 1000px;
-  margin: 0 auto 1.5rem;
+    max-width: 620px;
+    margin: 0 0 1.5rem;
 
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(2.6rem, 5vw, 4.2rem);
-  font-weight: 800;
-  line-height: 0.95;
-  letter-spacing: -0.05em;
-  text-align: center;
- }
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(2.5rem, 4.2vw, 3.75rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-align: left;
+  }
 
-.hero-gradient {
-  display: inline-block;
+  .hero-gradient {
+    display: inline-block;
+    background: var(--hero-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-  background: linear-gradient(
-    90deg,
-    #8b5cf6 0%,
-    #a78bfa 30%,
-    #7c3aed 70%,
-    #6d28d9 100%
-  );
+  .hero-sub {
+    max-width: 480px;
+    margin: 0 0 2.5rem;
 
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+    font-size: 1.05rem;
+    line-height: 1.7;
+    text-align: left;
 
-  .hero h1 .accent { color: #8b5cf6; }
-
- .hero-sub {
-  max-width: 760px;
-  margin: 0 auto 2.5rem;
-
-  font-size: 1.1rem;
-  line-height: 1.7;
-  text-align: center;
-
-  color: var(--text-muted);
-  font-weight: 300;
-}
+    color: var(--text-muted);
+    font-weight: 400;
+  }
 
   .hero-ctas {
     display: flex;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    justify-content: flex-start;
   }
 
-  .hero-stats {
+  /* ── HERO VISUAL (fanned job-card stack) ── */
+  .hero-visual {
     display: flex;
     align-items: center;
-    gap: 2.5rem;
-    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  .hero-stat { text-align: left; }
-  .hero-stat .num {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .hero-stat .label {
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    margin-top: 2px;
-  }
-
-  .hero-stat-sep {
-    width: 1px;
-    height: 36px;
-    background: var(--border-light);
-  }
-
-  /* ── MOCK UI PREVIEW ── */
-  .preview-wrap {
+  .job-stack {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    height: 400px;
     margin: 0 auto;
-    max-width: 1000px;
-    padding: 0 2.5rem 80px;
   }
 
-  .preview-shell {
-    background: var(--bg2);
-    border: 1px solid var(--border-light);
-    border-radius: 16px;
+  .job-card-wrap {
+    position: absolute;
+    bottom: 0;
+    transform-origin: bottom center;
+  }
+
+  .job-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    padding: 1.35rem 1.3rem 1.5rem;
+    box-shadow: 0 16px 36px rgba(23,21,31,0.13);
     overflow: hidden;
+    color: #14131a;
   }
 
-  .preview-topbar {
-    background: var(--bg3);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 16px;
+  .dark .job-card {
+    box-shadow: 0 16px 36px rgba(0,0,0,0.42);
+  }
+
+  .jc-top {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 1.15rem;
   }
 
-  .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-  .preview-content {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    min-height: 320px;
-  }
-
-  .preview-sidebar {
-    background: var(--bg3);
-    border-right: 1px solid var(--border);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .preview-sidebar-label {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-    padding: 8px 8px 4px;
-  }
-
-  .preview-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
+  .jc-logo {
+    width: 28px;
+    height: 28px;
     border-radius: 8px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    cursor: default;
-  }
-
-  .preview-nav-item.active {
-    background: var(--violet-dim);
-    color: #a78bfa;
-  }
-
-  .preview-nav-item .icon {
-    width: 16px; height: 16px;
-    opacity: 0.7;
-  }
-
-  .preview-main {
-    padding: 20px;
+    background: rgba(0,0,0,0.08);
     display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .preview-greeting {
-    background: rgba(124,58,237,0.08);
-    border: 1px solid rgba(124,58,237,0.2);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 0.78rem;
-    color: #c4b5fd;
-  }
-
-  .preview-cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-
-  .preview-card {
-    background: #0a0a14;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .preview-card .pc-label {
-    font-size: 0.6rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-
-  .preview-card .pc-val {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.4rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
     font-weight: 700;
   }
 
-  .preview-card .pc-sub {
-    font-size: 0.62rem;
-    color: var(--text-dim);
-    margin-top: 2px;
+  .jc-salary {
+    font-size: 0.68rem;
+    font-weight: 600;
+    opacity: 0.8;
   }
 
-  .preview-bottom {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+  .jc-role {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
   }
 
-  .preview-box {
-    background: #0a0a14;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-  }
+  .jc-front .jc-role { margin-bottom: 0.6rem; font-size: 1.05rem; }
 
-  .preview-box-label {
-    font-size: 0.62rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-  }
-
-  .preview-progress-bar {
-    height: 4px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 99px;
-    margin-bottom: 10px;
+  .jc-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    line-height: 1.5;
+    opacity: 0.72;
+    margin-bottom: 0.9rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  .preview-progress-fill {
-    height: 100%;
-    border-radius: 99px;
-    background: var(--violet-light);
-    width: 34%;
+  .jc-desc-front {
+    font-size: 0.8rem;
   }
 
-  .preview-roadmap-item {
+  .jc-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 5px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.7rem;
-    color: var(--text-muted);
-  }
-
-  .preview-roadmap-item:last-child { border-bottom: none; }
-
-  .preview-pill {
-    font-size: 0.6rem;
-    padding: 1px 7px;
-    border-radius: 999px;
-    border: 1px solid;
-    margin-left: auto;
-  }
-
-  .pill-done { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #34d399; }
-  .pill-active { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.3); color: #a78bfa; }
-  .pill-todo { background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--text-dim); }
-
-  .preview-kanban {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 6px;
+    font-size: 0.66rem;
+    opacity: 0.8;
+    margin-bottom: 0.9rem;
   }
 
-  .preview-kanban-col { font-size: 0.62rem; }
+  .jc-avatars { display: flex; }
 
-  .preview-kanban-col .col-title {
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
+  .jc-avatar {
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: rgba(0,0,0,0.18);
+    margin-left: -5px;
   }
 
-  .preview-kanban-card {
-    background: #141420;
-    border: 1px solid var(--border);
-    border-left: 2px solid;
-    border-radius: 6px;
-    padding: 6px 8px;
-    margin-bottom: 4px;
-    font-size: 0.65rem;
+  .jc-avatar:first-child { margin-left: 0; }
+
+  .jc-apply {
+    display: block;
+    width: 100%;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 0.6rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
   }
 
-  .preview-kanban-card .card-role { color: var(--text); font-weight: 500; }
-  .preview-kanban-card .card-co { color: var(--text-dim); }
+  @media (max-width: 860px) {
+    .hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding-top: 110px;
+    }
+    .hero-copy { align-items: center; text-align: center; }
+    .hero-title, .hero-sub { text-align: center; }
+    .hero-ctas { justify-content: center; }
+    .hero-visual { margin-top: 3rem; }
+    .job-stack { height: 400px; max-width: 400px; transform: scale(0.78); }
+  }
 
   /* ── SECTIONS ── */
   section { padding: 80px 2.5rem; }
@@ -497,7 +417,7 @@ const styles = `
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #8b5cf6;
+    color: var(--accent-text-strong);
     margin-bottom: 1rem;
   }
 
@@ -513,7 +433,7 @@ const styles = `
   .section-sub {
     font-size: 1rem;
     color: var(--text-muted);
-    max-width: 520px;
+    max-width: 560px;
     font-weight: 300;
     line-height: 1.7;
     margin-bottom: 3rem;
@@ -538,7 +458,7 @@ const styles = `
   .step-card:hover { border-color: var(--border-light); transform: translateY(-3px); }
 
   .step-num {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.7rem;
     font-weight: 700;
     color: var(--text-dim);
@@ -569,97 +489,10 @@ const styles = `
     font-weight: 300;
   }
 
-  /* ── FEATURES GRID ── */
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .feature-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.75rem;
-    transition: border-color 0.2s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .feature-card:hover { border-color: rgba(124,58,237,0.3); transform: translateY(-2px); }
-  .feature-card:hover::before { opacity: 1; }
-
-  .feature-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.65rem;
-    border-radius: 999px;
-    border: 1px solid;
-    margin-bottom: 1.25rem;
-  }
-
-  .tag-core { background: var(--violet-dim); border-color: rgba(124,58,237,0.3); color: #a78bfa; }
-  .tag-ext { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #34d399; }
-
-  .feature-card h3 {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.01em;
-  }
-
-  .feature-card p {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-    font-weight: 300;
-    margin-bottom: 1.25rem;
-  }
-
-  .feature-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .feature-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 0.825rem;
-    color: var(--text-muted);
-    font-weight: 300;
-  }
-
-  .feature-list li::before {
-    content: '';
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--violet-light);
-    margin-top: 7px;
-    flex-shrink: 0;
-  }
-
   /* ── NAV FLOW SECTION ── */
   .nav-flow {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 1rem;
     margin-top: 2.5rem;
   }
@@ -672,7 +505,7 @@ const styles = `
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    transition: all 0.2s;
+    transition: border-color 0.2s, background 0.2s;
     position: relative;
   }
 
@@ -687,9 +520,9 @@ const styles = `
   .nav-flow-icon svg { width: 16px; height: 16px; }
 
   .nav-flow-card h4 {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: var(--text);
   }
 
@@ -698,36 +531,6 @@ const styles = `
     color: var(--text-muted);
     font-weight: 300;
     line-height: 1.5;
-  }
-
-  .nav-flow-route {
-    font-size: 0.62rem;
-    color: var(--text-dim);
-    font-family: 'DM Sans', monospace;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 2px 6px;
-    display: inline-block;
-    margin-top: auto;
-  }
-
-  /* ── STACK PILLS ── */
-  .stack-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: 1.5rem;
-  }
-
-  .stack-pill {
-    font-size: 0.78rem;
-    font-weight: 400;
-    color: var(--text-muted);
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 0.3rem 0.85rem;
   }
 
   /* ── CTA SECTION ── */
@@ -762,29 +565,6 @@ const styles = `
     flex-wrap: wrap;
   }
 
-  /* ── FOOTER ── */
-  footer {
-    padding: 2rem 2.5rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  footer .footer-left {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-  }
-
-  footer .footer-left strong { color: var(--text-muted); font-weight: 500; }
-
-  footer .footer-right {
-    font-size: 0.78rem;
-    color: var(--text-dim);
-  }
-
   /* ── DIVIDER ── */
   .section-divider {
     height: 1px;
@@ -793,41 +573,148 @@ const styles = `
     margin: 0 auto;
   }
 
-  /* ── ANIMATE ON SCROLL ── */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
-  .fade-up.visible { opacity: 1; transform: none; }
 `
 
+const heroContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+}
+
+const heroItem = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+}
+
+const revealUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] },
+  }),
+}
+
+const JOB_CARDS = [
+  {
+    company: 'Northwind', role: 'Backend Engineer', salary: '$90K – $130K', bg: '#dbeafe', width: 200, left: -40, rotate: -20, z: 1, bottom: 0,
+    desc: 'Design reliable APIs and keep our platform fast.', applied: '20+ applied', cta: 'Apply Now',
+  },
+  {
+    company: 'Solstice', role: 'Marketing Lead', salary: '$60K – $95K', bg: '#fef3c7', width: 200, left: 56, rotate: -10, z: 2, bottom: 30,
+    desc: 'Grow our reach and bring in more candidates.', applied: '20+ applied', cta: 'Apply Now',
+  },
+  {
+    company: 'Nimbus', role: 'Senior Product Designer', salary: '$120K – $180K', bg: '#d1fae5', width: 216, left: 150, rotate: 0, z: 5, bottom: 34, front: true,
+    desc: 'Craft intuitive, user-friendly experiences for job seekers.', applied: '50+ applied', cta: 'Apply Here',
+  },
+  {
+    company: 'Cobalt', role: 'Data Analyst', salary: '$140K – $210K', bg: '#ffe4e6', width: 200, left: 270, rotate: 10, z: 2, bottom: 30,
+    desc: 'Turn application data into insights that improve hiring.', applied: '20+ applied', cta: 'Apply Now',
+  },
+  {
+    company: 'Vertex Labs', role: 'Frontend Engineer', salary: '$100K – $150K', bg: '#ede9fe', width: 200, left: 366, rotate: 20, z: 1, bottom: 0,
+    desc: 'Ship polished, accessible React interfaces.', applied: '20+ applied', cta: 'Apply Now',
+  },
+]
+
+function JobCardStack() {
+  return (
+    <div className="job-stack">
+      {JOB_CARDS.map((job, i) => (
+        <div
+          key={job.company}
+          className="job-card-wrap"
+          style={{ left: job.left, width: job.width, bottom: job.bottom, transform: `rotate(${job.rotate}deg)`, zIndex: job.z }}
+        >
+          <motion.div
+            className={`job-card ${job.front ? 'jc-front' : ''}`}
+            style={{ background: job.bg }}
+            initial={{ opacity: 0, y: 40, scale: 0.85 }}
+            animate={{ opacity: 1, y: -14, scale: 1 }}
+            whileHover={{ y: -22 }}
+            transition={{ duration: 0.55, delay: 0.3 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="jc-top">
+              <span className="jc-logo">{job.company[0]}</span>
+              <span className="jc-salary">{job.salary}</span>
+            </div>
+            <div className="jc-role">{job.role}</div>
+            <p className={`jc-desc ${job.front ? 'jc-desc-front' : ''}`}>{job.desc}</p>
+
+            <div className="jc-meta">
+              <span className="jc-avatars">
+                <span className="jc-avatar" />
+                <span className="jc-avatar" />
+                <span className="jc-avatar" />
+              </span>
+              {job.applied}
+            </div>
+            <Link to="/register" className="jc-apply">{job.cta}</Link>
+          </motion.div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const NAV_FLOW = [
+  {
+    label: 'Dashboard', route: '/dashboard', color: '#3b82f6',
+    desc: 'Stats, streak, roadmap summary and an AI nudge if you’ve gone quiet',
+    icon: <><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></>,
+  },
+  {
+    label: 'Profile', route: '/profile', color: '#94a3b8',
+    desc: 'Manage your CV, account details and re-index your data',
+    icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a8 8 0 0 1 16 0v1" /></>,
+  },
+  {
+    label: 'AI Assistant', route: '/chat', color: '#8b5cf6',
+    desc: 'RAG chat, cover letters, skill gaps, learning roadmap',
+    icon: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
+  },
+  {
+    label: 'Job Hunter', route: '/jobs', color: '#10b981',
+    desc: 'Search live listings, see fit-score bars and agent analysis',
+    icon: <><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></>,
+  },
+  {
+    label: 'Fit Score', route: '/fit-score', color: '#f59e0b',
+    desc: 'Paste a job description, get a hybrid AI + keyword match score',
+    icon: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></>,
+  },
+  {
+    label: 'Upload CV', route: '/cv-upload', color: '#22d3ee',
+    desc: 'PDF or DOCX — parsed, chunked and embedded for RAG',
+    icon: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></>,
+  },
+  {
+    label: 'Tailor CV', route: '/tailor-cv', color: '#f472b6',
+    desc: 'Paste a JD, get a rewritten CV, download as PDF',
+    icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></>,
+  },
+  {
+    label: 'Interview Coach', route: '/interview', color: '#f87171',
+    desc: 'JD-grounded mock interview with STAR scoring and a timer',
+    icon: <><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /></>,
+  },
+  {
+    label: 'Tracker', route: '/tracker', color: '#34d399',
+    desc: 'Kanban board, calendar, to-do list and overdue detection',
+    icon: <><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></>,
+  },
+]
+
 export default function LandingPage() {
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible')
-                        observer.unobserve(entry.target)
-                    }
-                })
-            },
-            { threshold: 0.12 }
-        )
-
-        const targets = document.querySelectorAll('.fade-up')
-        targets.forEach((el) => observer.observe(el))
-
-        return () => observer.disconnect()
-    }, [])
-
     return (
         <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
             <link
-                href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+                href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
                 rel="stylesheet"
             />
             <style>{styles}</style>
@@ -846,6 +733,7 @@ export default function LandingPage() {
                 </a>
 
                 <div className="nav-actions">
+                    <ThemeToggle />
                     <Link to="/login" className="btn-ghost">
                         Log in
                     </Link>
@@ -860,30 +748,34 @@ export default function LandingPage() {
 
             {/* ── HERO ── */}
             <section className="hero">
+                <motion.div className="hero-copy" variants={heroContainer} initial="hidden" animate="show">
+                    <motion.h1 className="hero-title" variants={heroItem}>
+                        Your AI co-pilot
+                        <br />
+                        <span className="hero-gradient">
+                            for landing the right job
+                        </span>
+                    </motion.h1>
 
-                <h1 className="hero-title">
-                    Your AI co-pilot
-                    <br />
-                    <span className="hero-gradient">
-                        for landing the right job
-                    </span>
-                </h1>
+                    <motion.p className="hero-sub" variants={heroItem}>
+                        Upload your CV once. CareerPilot finds matching jobs, scores your fit, tailors your CV,
+                        coaches you for interviews and tracks every application.
+                    </motion.p>
 
-                <p className="hero-sub">
-                    Upload your CV once. CareerPilot finds matching jobs, scores your fit, tailors your CV,
-                    coaches you for interviews and tracks every application.
-                </p>
+                    <motion.div className="hero-ctas" variants={heroItem}>
+                        <Link to="/register" className="btn-primary-lg">
+                            Get started
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </Link>
+                        <a href="#how-it-works" className="btn-outline-lg">See how it works</a>
+                    </motion.div>
+                </motion.div>
 
-                <div className="hero-ctas">
-                    <Link to="/register" className="btn-primary-lg">
-                        Get started
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </Link>
-                    <a href="#how-it-works" className="btn-outline-lg">See how it works</a>
+                <div className="hero-visual">
+                    <JobCardStack />
                 </div>
-
             </section>
 
             {/* ── HOW IT WORKS ── */}
@@ -897,7 +789,7 @@ export default function LandingPage() {
                     <p className="section-sub">CareerPilot uses RAG (Retrieval-Augmented Generation) to ground every AI response in your real CV — no hallucinations, no generic advice.</p>
 
                     <div className="steps">
-                        <div className="step-card fade-up">
+                        <motion.div className="step-card" custom={0} variants={revealUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
                             <div className="step-num">01</div>
                             <div className="step-icon" style={{ background: 'var(--violet-dim)' }}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -908,9 +800,9 @@ export default function LandingPage() {
                             </div>
                             <h3>Upload your CV</h3>
                             <p>PDF or DOCX. We extract, chunk, embed and index every section — skills, experience, education, projects — into a vector database.</p>
-                        </div>
+                        </motion.div>
 
-                        <div className="step-card fade-up" style={{ transitionDelay: '0.1s' }}>
+                        <motion.div className="step-card" custom={1} variants={revealUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
                             <div className="step-num">02</div>
                             <div className="step-icon" style={{ background: 'var(--green-dim)' }}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -920,9 +812,9 @@ export default function LandingPage() {
                             </div>
                             <h3>Discover matching jobs</h3>
                             <p>The AI agent calls live job APIs, retrieves your CV chunks, and computes a cosine-similarity fit score against each listing — automatically.</p>
-                        </div>
+                        </motion.div>
 
-                        <div className="step-card fade-up" style={{ transitionDelay: '0.2s' }}>
+                        <motion.div className="step-card" custom={2} variants={revealUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
                             <div className="step-num">03</div>
                             <div className="step-icon" style={{ background: 'var(--amber-dim)' }}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -931,9 +823,9 @@ export default function LandingPage() {
                             </div>
                             <h3>Chat with your AI assistant</h3>
                             <p>Ask anything: "Am I ready for this role?", "Generate a cover letter", "What skills am I missing?". Every answer is grounded in your CV via RAG.</p>
-                        </div>
+                        </motion.div>
 
-                        <div className="step-card fade-up" style={{ transitionDelay: '0.3s' }}>
+                        <motion.div className="step-card" custom={3} variants={revealUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
                             <div className="step-num">04</div>
                             <div className="step-icon" style={{ background: 'rgba(59,130,246,0.12)' }}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -945,7 +837,7 @@ export default function LandingPage() {
                             </div>
                             <h3>Track and iterate</h3>
                             <p>Kanban board, calendar, streak counter, AI nudges if you've gone quiet — the dashboard keeps you accountable and moving forward every day.</p>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>
@@ -961,108 +853,26 @@ export default function LandingPage() {
                     <p className="section-sub">CareerPilot has a clean sidebar layout. Every feature lives at its own route — all protected by auth after login.</p>
 
                     <div className="nav-flow">
-                        <div className="nav-flow-card fade-up">
-                            <div className="nav-flow-icon" style={{ background: 'rgba(59,130,246,0.12)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="3" y="3" width="7" height="7" />
-                                    <rect x="14" y="3" width="7" height="7" />
-                                    <rect x="14" y="14" width="7" height="7" />
-                                    <rect x="3" y="14" width="7" height="7" />
-                                </svg>
-                            </div>
-                            <h4>Dashboard</h4>
-                            <p>Stats, streak, roadmap summary, kanban preview, AI nudge</p>
-                            <span className="nav-flow-route">/dashboard</span>
-                        </div>
-
-                        <div className="nav-flow-card fade-up" style={{ transitionDelay: '0.05s' }}>
-                            <div className="nav-flow-icon" style={{ background: 'var(--green-dim)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="11" cy="11" r="8" />
-                                    <path d="M21 21l-4.35-4.35" />
-                                </svg>
-                            </div>
-                            <h4>Job Hunter</h4>
-                            <p>Search, fit score bars, agent analysis, save to tracker</p>
-                            <span className="nav-flow-route">/jobs</span>
-                        </div>
-
-                        <div className="nav-flow-card fade-up" style={{ transitionDelay: '0.1s' }}>
-                            <div className="nav-flow-icon" style={{ background: 'var(--violet-dim)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                </svg>
-                            </div>
-                            <h4>AI Assistant</h4>
-                            <p>RAG chat, cover letters, skill gaps, learning roadmap</p>
-                            <span className="nav-flow-route">/chat</span>
-                        </div>
-
-                        <div className="nav-flow-card fade-up" style={{ transitionDelay: '0.15s' }}>
-                            <div className="nav-flow-icon" style={{ background: 'rgba(245,158,11,0.12)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                    <polyline points="14 2 14 8 20 8" />
-                                </svg>
-                            </div>
-                            <h4>Tailor CV</h4>
-                            <p>Paste JD, get a rewritten CV, download as PDF</p>
-                            <span className="nav-flow-route">/tailor-cv</span>
-                        </div>
-
-                        <div className="nav-flow-card fade-up" style={{ transitionDelay: '0.2s' }}>
-                            <div className="nav-flow-icon" style={{ background: 'rgba(239,68,68,0.1)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
-                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                                </svg>
-                            </div>
-                            <h4>Interview Coach</h4>
-                            <p>5 JD-grounded questions, STAR scoring, readiness score</p>
-                            <span className="nav-flow-route">/interview</span>
-                        </div>
-
-                        <div className="nav-flow-card fade-up" style={{ transitionDelay: '0.25s' }}>
-                            <div className="nav-flow-icon" style={{ background: 'rgba(16,185,129,0.1)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                </svg>
-                            </div>
-                            <h4>Tracker</h4>
-                            <p>Full kanban board, calendar, to-do list, notes per card</p>
-                            <span className="nav-flow-route">/tracker</span>
-                        </div>
-
-                        <div className="nav-flow-card fade-up" style={{ transitionDelay: '0.3s' }}>
-                            <div className="nav-flow-icon" style={{ background: 'rgba(148,163,184,0.1)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                    <circle cx="12" cy="7" r="4" />
-                                </svg>
-                            </div>
-                            <h4>Outreach</h4>
-                            <p>Draft personalised recruiter messages, copy to clipboard</p>
-                            <span className="nav-flow-route">/outreach</span>
-                        </div>
-
-                        <div className="nav-flow-card fade-up" style={{ transitionDelay: '0.35s' }}>
-                            <div className="nav-flow-icon" style={{ background: 'rgba(99,102,241,0.12)' }}>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="3" />
-                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                                    <path d="M4.93 4.93a10 10 0 0 0 0 14.14" />
-                                </svg>
-                            </div>
-                            <h4>Settings / Profile</h4>
-                            <p>Manage CV upload, account info, re-index CV</p>
-                            <span className="nav-flow-route">/settings</span>
-                        </div>
+                        {NAV_FLOW.map((item, i) => (
+                            <motion.div
+                                className="nav-flow-card"
+                                key={item.route}
+                                custom={i}
+                                variants={revealUp}
+                                initial="hidden"
+                                whileInView="show"
+                                viewport={{ once: true, amount: 0.3 }}
+                            >
+                                <div className="nav-flow-icon" style={{ background: `${item.color}1f` }}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke={item.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        {item.icon}
+                                    </svg>
+                                </div>
+                                <h4>{item.label}</h4>
+                                <p>{item.desc}</p>
+                            </motion.div>
+                        ))}
                     </div>
-
-
                 </div>
             </section>
 
@@ -1085,7 +895,6 @@ export default function LandingPage() {
                     </Link>
                 </div>
             </div>
-
 
         </>
     )
