@@ -24,9 +24,9 @@ import {
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 function fitColor(score) {
-  if (score >= 75) return { text: 'text-green-400', bg: 'bg-green-950', border: 'border-green-800', bar: 'bg-green-500' }
-  if (score >= 55) return { text: 'text-amber-400',  bg: 'bg-amber-950',  border: 'border-amber-800',  bar: 'bg-amber-500'  }
-  return              { text: 'text-red-400',   bg: 'bg-red-950',    border: 'border-red-800',    bar: 'bg-red-500'    }
+  if (score >= 75) return { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-950', border: 'border-green-300 dark:border-green-800', bar: 'bg-green-500' }
+  if (score >= 55) return { text: 'text-amber-600 dark:text-amber-400',  bg: 'bg-amber-100 dark:bg-amber-950',  border: 'border-amber-300 dark:border-amber-800',  bar: 'bg-amber-500'  }
+  return              { text: 'text-red-600 dark:text-red-400',   bg: 'bg-red-100 dark:bg-red-950',    border: 'border-red-300 dark:border-red-800',    bar: 'bg-red-500'    }
 }
 
 function fitLabel(score) {
@@ -48,9 +48,9 @@ function FitBar({ label, value }) {
     <div className="mt-2.5">
       <div className="flex justify-between text-xs text-gray-500 mb-1">
         <span>{label}</span>
-        <span className={value >= 75 ? 'text-green-400' : value >= 55 ? 'text-amber-400' : 'text-red-400'}>{value}%</span>
+        <span className={value >= 75 ? 'text-green-600 dark:text-green-400' : value >= 55 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}>{value}%</span>
       </div>
-      <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+      <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ${barColor(value)}`}
           style={{ width: `${value}%` }}
@@ -67,15 +67,15 @@ function JobCard({ job, selected, onClick, onSave }) {
       onClick={onClick}
       className={`rounded-xl p-4 border cursor-pointer transition-all duration-150 group ${
         selected
-          ? 'border-violet-600 bg-gray-900 shadow-lg shadow-violet-950/30'
-          : 'border-gray-800 bg-gray-900 hover:border-gray-600'
+          ? 'border-violet-600 bg-gray-50 dark:bg-gray-900 shadow-lg shadow-violet-200/40 dark:shadow-violet-950/30'
+          : 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-600'
       }`}
     >
       {/* top row */}
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{job.title}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{job.company} · {job.location}</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{job.title}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{job.company} · {job.location}</p>
         </div>
         <div className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border ${fit.bg} ${fit.border} ${fit.text}`}>
           {job.overall_score}% fit
@@ -108,7 +108,7 @@ function JobCard({ job, selected, onClick, onSave }) {
 
       {/* actions — visible on selected or hover */}
       {selected && (
-        <div className="mt-3 pt-3 border-t border-gray-800 flex gap-2">
+        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-800 flex gap-2">
           {job.url && (
             <a
               href={job.url}
@@ -122,14 +122,14 @@ function JobCard({ job, selected, onClick, onSave }) {
           )}
           <button
             onClick={(e) => { e.stopPropagation(); onSave(job) }}
-            className="flex items-center justify-center gap-1.5 text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-2 rounded-lg transition"
+            className="flex items-center justify-center gap-1.5 text-xs font-semibold bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg transition"
           >
             <BookmarkPlus size={13} /> Save
           </button>
           <Link
             to="/tailor-cv"
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-1.5 text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-2 rounded-lg transition"
+            className="flex items-center justify-center gap-1.5 text-xs font-semibold bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg transition"
           >
             <FileText size={13} /> Tailor CV
           </Link>
@@ -142,12 +142,12 @@ function JobCard({ job, selected, onClick, onSave }) {
 function AgentExplanation({ explanation }) {
   if (!explanation) return null
   return (
-    <div className="mt-4 bg-violet-950/30 border border-violet-800/40 rounded-xl p-4">
+    <div className="mt-4 bg-violet-100/60 dark:bg-violet-950/30 border border-violet-300/60 dark:border-violet-800/40 rounded-xl p-4">
       <div className="flex items-center gap-2 mb-2">
-        <Sparkles size={13} className="text-violet-400" />
-        <span className="text-xs font-semibold text-violet-400 uppercase tracking-wide">Agent analysis</span>
+        <Sparkles size={13} className="text-violet-600 dark:text-violet-400" />
+        <span className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide">Agent analysis</span>
       </div>
-      <p className="text-sm text-gray-300 leading-relaxed">{explanation}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{explanation}</p>
     </div>
   )
 }
@@ -219,13 +219,13 @@ const [loading, setLoading] = useState(false)
 
   return (
       <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="px-6 py-4 border-b border-gray-800">
-          <h1 className="text-base font-semibold text-white">Job Hunter</h1>
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+          <h1 className="text-base font-semibold text-gray-900 dark:text-white">Job Hunter</h1>
           <p className="text-xs text-gray-500 mt-0.5">Live search + fit scores grounded in your CV</p>
         </div>
 
           {/* Search bar */}
-          <div className="px-6 py-4 border-b border-gray-800 bg-gray-950">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
             <div className="flex gap-3 max-w-3xl">
               {/* Keyword input */}
               <div className="flex-1 relative">
@@ -236,7 +236,7 @@ const [loading, setLoading] = useState(false)
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="e.g. ML engineer internship, backend developer…"
-                  className="w-full bg-gray-900 text-white text-sm rounded-lg pl-9 pr-4 py-2.5 border border-gray-800 outline-none focus:ring-2 focus:ring-violet-500 placeholder-gray-600"
+                  className="w-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm rounded-lg pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-violet-500 placeholder-gray-500 dark:placeholder-gray-600"
                 />
               </div>
 
@@ -249,7 +249,7 @@ const [loading, setLoading] = useState(false)
                   onChange={(e) => setLocInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Location"
-                  className="w-full bg-gray-900 text-white text-sm rounded-lg pl-8 pr-4 py-2.5 border border-gray-800 outline-none focus:ring-2 focus:ring-violet-500 placeholder-gray-600"
+                  className="w-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm rounded-lg pl-8 pr-4 py-2.5 border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-violet-500 placeholder-gray-500 dark:placeholder-gray-600"
                 />
               </div>
 
@@ -273,22 +273,22 @@ const [loading, setLoading] = useState(false)
           <div className="flex-1 overflow-hidden flex">
 
             {/* Left — job list */}
-            <div className="w-[420px] shrink-0 overflow-y-auto border-r border-gray-800 p-4 space-y-3">
+            <div className="w-[420px] shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-800 p-4 space-y-3">
 
               {/* Loading skeleton */}
               {loading && (
                 <>
                   {[1, 2, 3].map((n) => (
-                    <div key={n} className="rounded-xl border border-gray-800 bg-gray-900 p-4 space-y-3 animate-pulse">
+                    <div key={n} className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 space-y-3 animate-pulse">
                       <div className="flex justify-between">
                         <div className="space-y-2">
-                          <div className="h-3.5 w-40 bg-gray-800 rounded" />
-                          <div className="h-3 w-28 bg-gray-800 rounded" />
+                          <div className="h-3.5 w-40 bg-gray-200 dark:bg-gray-800 rounded" />
+                          <div className="h-3 w-28 bg-gray-200 dark:bg-gray-800 rounded" />
                         </div>
-                        <div className="h-6 w-16 bg-gray-800 rounded-full" />
+                        <div className="h-6 w-16 bg-gray-200 dark:bg-gray-800 rounded-full" />
                       </div>
-                      <div className="h-1.5 w-full bg-gray-800 rounded-full" />
-                      <div className="h-1.5 w-full bg-gray-800 rounded-full" />
+                      <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-800 rounded-full" />
+                      <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-800 rounded-full" />
                     </div>
                   ))}
                 </>
@@ -297,10 +297,10 @@ const [loading, setLoading] = useState(false)
               {/* Empty state — before first search */}
               {!loading && !searched && (
                 <div className="flex flex-col items-center justify-center h-full text-center py-16 px-6">
-                  <div className="w-14 h-14 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center mb-4">
-                    <Briefcase size={24} className="text-gray-600" />
+                  <div className="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center mb-4">
+                    <Briefcase size={24} className="text-gray-500 dark:text-gray-600" />
                   </div>
-                  <p className="text-sm font-medium text-gray-400 mb-1">Find your next role</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Find your next role</p>
                   <p className="text-xs text-gray-600 leading-relaxed">
                     Type a job title above and hit Search. The agent will query live listings and score each one against your CV.
                   </p>
@@ -310,7 +310,7 @@ const [loading, setLoading] = useState(false)
               {/* Empty state — after search with no results */}
               {!loading && searched && results.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center py-16 px-6">
-                  <p className="text-sm font-medium text-gray-400 mb-1">No results found</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">No results found</p>
                   <p className="text-xs text-gray-600">Try a broader keyword or different location.</p>
                 </div>
               )}
@@ -332,8 +332,8 @@ const [loading, setLoading] = useState(false)
 
               {!selected && !loading && (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center mb-4">
-                    <Target size={28} className="text-gray-700" />
+                  <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center mb-4">
+                    <Target size={28} className="text-gray-400 dark:text-gray-700" />
                   </div>
                   <p className="text-sm font-medium text-gray-500">Select a job to see full details</p>
                 </div>
@@ -346,8 +346,8 @@ const [loading, setLoading] = useState(false)
                   <div>
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h2 className="text-xl font-bold text-white">{selected.title}</h2>
-                        <p className="text-sm text-gray-400 mt-1">{selected.company}</p>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">{selected.title}</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{selected.company}</p>
                       </div>
                       {(() => {
                         const fit = fitColor(selected.overall_score)
@@ -362,17 +362,17 @@ const [loading, setLoading] = useState(false)
                     {/* Meta chips */}
                     <div className="flex flex-wrap gap-2 mt-3">
                       {selected.location && (
-                        <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-800 border border-gray-700 px-2.5 py-1 rounded-full">
+                        <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 rounded-full">
                           <MapPin size={11} /> {selected.location}
                         </span>
                       )}
                       {selected.salary && (
-                        <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-800 border border-gray-700 px-2.5 py-1 rounded-full">
+                        <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 rounded-full">
                           <Banknote size={11} /> {selected.salary}
                         </span>
                       )}
                       {selected.deadline && (
-                        <span className="flex items-center gap-1 text-xs text-gray-400 bg-gray-800 border border-gray-700 px-2.5 py-1 rounded-full">
+                        <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2.5 py-1 rounded-full">
                           <CalendarDays size={11} /> Deadline {selected.deadline}
                         </span>
                       )}
@@ -380,14 +380,14 @@ const [loading, setLoading] = useState(false)
                   </div>
 
                   {/* Overall score bar */}
-                  <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-semibold text-white">Overall Match</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">Overall Match</span>
                       <span className={`text-sm font-semibold ${fitColor(selected.overall_score).text}`}>
                         {fitLabel(selected.overall_score)}
                       </span>
                     </div>
-                    <div className="h-2.5 w-full bg-gray-800 rounded-full overflow-hidden">
+                    <div className="h-2.5 w-full bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-700 ${fitColor(selected.overall_score).bar}`}
                         style={{ width: `${selected.overall_score}%` }}
@@ -407,17 +407,17 @@ const [loading, setLoading] = useState(false)
 
                   {/* Match explanation */}
                   {selected.explanation && (
-                    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
                       <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-2">Why this match</p>
-                      <p className="text-sm text-gray-300 leading-relaxed">{selected.explanation}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{selected.explanation}</p>
                     </div>
                   )}
 
                   {/* Job description */}
                   {selected.description && (
-                    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
                       <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-2">Job description</p>
-                      <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-line">{selected.description}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-line">{selected.description}</p>
                     </div>
                   )}
 
@@ -435,13 +435,13 @@ const [loading, setLoading] = useState(false)
                     )}
                     <button
                       onClick={() => handleSave(selected)}
-                      className="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold text-sm px-4 py-3 rounded-xl transition"
+                      className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm px-4 py-3 rounded-xl transition"
                     >
                       <BookmarkPlus size={15} /> Save
                     </button>
                     <Link
                       to="/tailor-cv"
-                      className="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold text-sm px-4 py-3 rounded-xl transition"
+                      className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm px-4 py-3 rounded-xl transition"
                     >
                       <FileText size={15} /> Tailor CV
                     </Link>
@@ -451,17 +451,17 @@ const [loading, setLoading] = useState(false)
                   <div className="grid grid-cols-2 gap-3">
                     <Link
                       to="/fit-score"
-                      className="flex items-center gap-2.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-xl p-3 text-sm text-gray-400 hover:text-white transition"
+                      className="flex items-center gap-2.5 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
                     >
-                      <Target size={15} className="text-violet-400" />
+                      <Target size={15} className="text-violet-600 dark:text-violet-400" />
                       <span>Deep fit analysis</span>
                       <ChevronRight size={13} className="ml-auto" />
                     </Link>
                     <Link
                       to="/interview"
-                      className="flex items-center gap-2.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-xl p-3 text-sm text-gray-400 hover:text-white transition"
+                      className="flex items-center gap-2.5 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
                     >
-                      <Mic size={15} className="text-violet-400" />
+                      <Mic size={15} className="text-violet-600 dark:text-violet-400" />
                       <span>Mock interview</span>
                       <ChevronRight size={13} className="ml-auto" />
                     </Link>

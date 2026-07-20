@@ -63,9 +63,9 @@ export default function Chat() {
 
   return (
       <div className="flex flex-col h-full">
-        <div className="px-6 py-4 border-b border-gray-800">
-          <h1 className="text-xl font-bold text-white">AI Career Assistant</h1>
-          <p className="text-gray-400 text-sm">Powered by your CV — ask anything</p>
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">AI Career Assistant</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Powered by your CV — ask anything</p>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
@@ -75,7 +75,7 @@ export default function Chat() {
                 className={`max-w-2xl rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                   msg.role === 'user'
                     ? 'bg-violet-600 text-white'
-                    : 'bg-gray-800 text-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200'
                 }`}
               >
                 {msg.role === 'assistant' ? (
@@ -91,7 +91,7 @@ export default function Chat() {
 
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-gray-800 rounded-2xl px-4 py-3">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -109,7 +109,7 @@ export default function Chat() {
               <button
                 key={q}
                 onClick={() => sendMessage(q)}
-                className="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-3 py-2 rounded-full border border-gray-700 transition"
+                className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-3 py-2 rounded-full border border-gray-200 dark:border-gray-700 transition"
               >
                 {q}
               </button>
@@ -117,7 +117,7 @@ export default function Chat() {
           </div>
         )}
 
-        <div className="px-4 py-4 border-t border-gray-800">
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800">
           <div className="flex gap-3 max-w-3xl mx-auto">
             <textarea
               value={input}
@@ -125,7 +125,7 @@ export default function Chat() {
               onKeyDown={handleKeyDown}
               rows={1}
               placeholder="Ask about your CV, cover letters, skill gaps..."
-              className="flex-1 bg-gray-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-violet-500 resize-none text-sm"
+              className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-violet-500 resize-none text-sm"
             />
             <button
               onClick={() => sendMessage()}
